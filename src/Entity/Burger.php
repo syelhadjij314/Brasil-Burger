@@ -2,19 +2,32 @@
 
 namespace App\Entity;
 
-use App\Repository\BurgerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BurgerRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\Response;
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
+#[ApiResource()]
 class Burger extends Produit
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'burgers')]
+    private $menu;
 
-    public function getId(): ?int
+    public function getMenu(): ?Menu
     {
-        return $this->id;
+        return $this->menu;
     }
+
+    public function setMenu(?Menu $menu): self
+    {
+        $this->menu = $menu;
+
+        return $this;
+    }
+
+    
+
 }

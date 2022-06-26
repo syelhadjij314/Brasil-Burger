@@ -2,19 +2,25 @@
 
 namespace App\Entity;
 
-use App\Repository\GestionnaireRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\GestionnaireRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: GestionnaireRepository::class)]
-class Gestionnaire
-{
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+#[ApiResource]
 
-    public function getId(): ?int
+class Gestionnaire extends User
+{
+
+    /**
+     * @return Collection<int, Produit>
+     */
+    public function getProduits(): Collection
     {
-        return $this->id;
+        return $this->produits;
     }
+
+    
 }
