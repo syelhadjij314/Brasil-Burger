@@ -4,17 +4,39 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Controller\EmailValidateController;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
+
+
+#[ORM\InheritanceType("JOINED")]
+#[ORM\DiscriminatorColumn(name:"type", type:"string")]
+#[ORM\DiscriminatorMap(["user" => "User","client" => "Client","gestionnaire" => "Gestionnaire"])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    collectionOperations:[
+        "get",
+        "post",
+        "VALIDATION" => [
+        "method"=>"PATCH",
+        'deserialize' => false,
+        'path'=>'users/validate/{token}',
+        'controller' => EmailValidateController::class
+        ]
+    
+        ],
+    itemOperations:[
+        "get",
+        "put"
+        ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -45,22 +67,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean',nullable: true)]
     protected $is_enable;
 
-    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
-    protected $expireAt;
-
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le nom est Obligatoire")]
     #[Groups(['liste-all'])]
-    private $nom;
+    protected $nom;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
     #[Groups(['liste-all'])]
-    private $prenom;
+    protected $prenom;
+
+    #[ORM\Column(type: 'datetime')]
+    protected $expireAt;
 
     public function __construct()
     {
         $this->produits = new ArrayCollection();
+        $this->is_enable= false;
+        $this->generateToken();
+        $roleDefault=get_called_class();
+        $roleDefault= explode("\\" ,$roleDefault);
+        $roleDefault=strtoupper($roleDefault[2]);
+        return $this->roles= [" ROLE_".$roleDefault];
     }
 
     public function getId(): ?int
@@ -97,8 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_VISITEUR';
-
+        $this->roles=["ROLE_VISITEUR"];
         return array_unique($roles);
     }
 
@@ -199,12 +226,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getExpireAt(): ?\DateTimeImmutable
+    public function getExpireAt(): ?\datetime
     {
         return $this->expireAt;
     }
 
-    public function setExpireAt(\DateTimeImmutable $expireAt): self
+    public function setExpireAt(\datetime $expireAt): self
     {
         $this->expireAt = $expireAt;
 
@@ -233,6 +260,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->prenom = $prenom;
 
         return $this;
+    }
+
+    public function generateToken()
+    {
+        $this->token= rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
+        $this->expireAt= new \DateTime("+1 days");
     }
 
 }

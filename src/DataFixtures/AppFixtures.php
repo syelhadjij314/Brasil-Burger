@@ -20,6 +20,8 @@ class AppFixtures extends Fixture
     {
         $user = new User();
         $user->setLogin('client@gmail.com');
+        $user->setPrenom('Mor');
+        $user->setNom('Diouf');
         $hashedPassword = $this->passwordHasher->hashPassword(
             $user,
             'passer'
@@ -29,6 +31,8 @@ class AppFixtures extends Fixture
         
         $user1 = new User();
         $user1->setLogin('gestionnaire@gmail.com');
+        $user1->setPrenom('Mor');
+        $user1->setNom('Diouf');
         $hashedPassword = $this->passwordHasher->hashPassword(
             $user1,
             'passer'

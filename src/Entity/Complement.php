@@ -3,112 +3,78 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ComplementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ComplementRepository::class)]
+// #[Entity(repositoryClass: ComplementRepository::class)
 #[ApiResource]
 class Complement
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
-
-    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'complements')]
-    private $menus;
-
-    #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'complements')]
-    private $boissons;
-
-    #[ORM\ManyToMany(targetEntity: Frite::class, inversedBy: 'complements')]
-    private $frites;
+    private int $id;
+    private  array $frites;
+    private array $boissons;
 
     public function __construct()
     {
-        $this->menus = new ArrayCollection();
-        $this->boissons = new ArrayCollection();
         $this->frites = new ArrayCollection();
+        $this->boissons = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    /**
+     * Get the value of frites
+     */ 
+    public function getFrites()
+    {
+        return $this->frites;
+    }
+
+    /**
+     * Set the value of frites
+     *
+     * @return  self
+     */ 
+    public function setFrites($frites)
+    {
+        $this->frites = $frites;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of boissons
+     */ 
+    public function getBoissons()
+    {
+        return $this->boissons;
+    }
+
+    /**
+     * Set the value of boissons
+     *
+     * @return  self
+     */ 
+    public function setBoissons($boissons)
+    {
+        $this->boissons = $boissons;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id
+     */ 
+    public function getId()
     {
         return $this->id;
     }
 
     /**
-     * @return Collection<int, Menu>
-     */
-    public function getMenus(): Collection
+     * Set the value of id
+     *
+     * @return  self
+     */ 
+    public function setId($id)
     {
-        return $this->menus;
-    }
-
-    public function addMenu(Menu $menu): self
-    {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->addComplement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMenu(Menu $menu): self
-    {
-        if ($this->menus->removeElement($menu)) {
-            $menu->removeComplement($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Boisson>
-     */
-    public function getBoissons(): Collection
-    {
-        return $this->boissons;
-    }
-
-    public function addBoisson(Boisson $boisson): self
-    {
-        if (!$this->boissons->contains($boisson)) {
-            $this->boissons[] = $boisson;
-        }
-
-        return $this;
-    }
-
-    public function removeBoisson(Boisson $boisson): self
-    {
-        $this->boissons->removeElement($boisson);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Frite>
-     */
-    public function getFrites(): Collection
-    {
-        return $this->frites;
-    }
-
-    public function addFrite(Frite $frite): self
-    {
-        if (!$this->frites->contains($frite)) {
-            $this->frites[] = $frite;
-        }
-
-        return $this;
-    }
-
-    public function removeFrite(Frite $frite): self
-    {
-        $this->frites->removeElement($frite);
+        $this->id = $id;
 
         return $this;
     }

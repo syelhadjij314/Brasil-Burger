@@ -10,24 +10,63 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    collectionOperations:[
+        "get"=>[
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-simple']],
+        ] ,
+        "post"=>[
+            'denormalization_context' => ['groups' => ['liste-simple','liste-all']],
+            'normalization_context' => ['groups' => ['liste-all']]
+        ]],
+    itemOperations:[
+        "put"=>[
+            "security"=> "is_granted('ROLE_GESTIONNAIRE')",
+            "security_message"=> "Vous n'avez pas accès à cette Ressource",
+        ],
+        "get"=>[
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-all']],
+        ],
+        ])]
 class Burger extends Produit
 {
-    #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'burgers')]
-    private $menu;
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'burgers')]
+    private $menus;
 
-    public function getMenu(): ?Menu
+    public function __construct()
     {
-        return $this->menu;
+        parent::__construct();
+        $this->menus = new ArrayCollection();
     }
 
-    public function setMenu(?Menu $menu): self
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
     {
-        $this->menu = $menu;
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): self
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->addBurger($this);
+        }
 
         return $this;
     }
 
-    
+    public function removeMenu(Menu $menu): self
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeBurger($this);
+        }
 
+        return $this;
+    }
 }

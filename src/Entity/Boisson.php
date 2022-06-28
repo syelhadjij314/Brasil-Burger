@@ -7,22 +7,48 @@ use App\Repository\BoissonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: BoissonRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations:[
+        "get"=>[
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-simple']],
+        ] ,
+        "post"=>[
+            'denormalization_context' => ['groups' => ['liste-simple','liste-all']],
+            'normalization_context' => ['groups' => ['liste-all']]
+        ]],
+    itemOperations:[
+        "put"=>[
+            "security"=> "is_granted('ROLE_GESTIONNAIRE')",
+            "security_message"=> "Vous n'avez pas accès à cette Ressource",
+        ],
+        "get"=>[
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-all']],
+        ],
+        ])]
 class Boisson extends Produit
 {
     
-
+    #[Groups(['liste-all'])]
     #[ORM\Column(type: 'string', length: 255)]
     private $taille;
 
-    #[ORM\ManyToMany(targetEntity: Complement::class, mappedBy: 'boissons')]
-    private $complements;
+    
+
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'boissons')]
+    private $menus;
 
     public function __construct()
     {
-        $this->complements = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
 
@@ -37,29 +63,28 @@ class Boisson extends Produit
 
         return $this;
     }
-
     /**
-     * @return Collection<int, Complement>
+     * @return Collection<int, Menu>
      */
-    public function getComplements(): Collection
+    public function getMenus(): Collection
     {
-        return $this->complements;
+        return $this->menus;
     }
 
-    public function addComplement(Complement $complement): self
+    public function addMenu(Menu $menu): self
     {
-        if (!$this->complements->contains($complement)) {
-            $this->complements[] = $complement;
-            $complement->addBoisson($this);
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->addBoisson($this);
         }
 
         return $this;
     }
 
-    public function removeComplement(Complement $complement): self
+    public function removeMenu(Menu $menu): self
     {
-        if ($this->complements->removeElement($complement)) {
-            $complement->removeBoisson($this);
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeBoisson($this);
         }
 
         return $this;

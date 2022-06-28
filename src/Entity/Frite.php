@@ -7,43 +7,65 @@ use App\Repository\FriteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Response;
+
 
 #[ORM\Entity(repositoryClass: FriteRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations:[
+        "get"=>[
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-simple']],
+        ] ,
+        "post"=>[
+            'denormalization_context' => ['groups' => ['liste-simple','liste-all']],
+            'normalization_context' => ['groups' => ['liste-all']]
+        ]],
+    itemOperations:[
+        "put"=>[
+            "security"=> "is_granted('ROLE_GESTIONNAIRE')",
+            "security_message"=> "Vous n'avez pas accès à cette Ressource",
+        ],
+        "get"=>[
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-all']],
+        ],
+        ])]
 class Frite extends Produit
 {
-    
 
-    #[ORM\ManyToMany(targetEntity: Complement::class, mappedBy: 'frites')]
-    private $complements;
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'frites')]
+    private $menus;
 
     public function __construct()
     {
-        $this->complements = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     /**
-     * @return Collection<int, Complement>
+     * @return Collection<int, Menu>
      */
-    public function getComplements(): Collection
+    public function getMenus(): Collection
     {
-        return $this->complements;
+        return $this->menus;
     }
 
-    public function addComplement(Complement $complement): self
+    public function addMenu(Menu $menu): self
     {
-        if (!$this->complements->contains($complement)) {
-            $this->complements[] = $complement;
-            $complement->addFrite($this);
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->addFrite($this);
         }
 
         return $this;
     }
 
-    public function removeComplement(Complement $complement): self
+    public function removeMenu(Menu $menu): self
     {
-        if ($this->complements->removeElement($complement)) {
-            $complement->removeFrite($this);
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeFrite($this);
         }
 
         return $this;

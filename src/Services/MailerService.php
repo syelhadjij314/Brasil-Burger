@@ -4,23 +4,26 @@ namespace App\Services ;
 // use Twig\Environment;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Twig\Environment;
 
 class MailerService{
     
-    public function __construct(MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer,Environment $twig)
     {
         $this->mailer=$mailer;
-        // $this->twig->$twig;    
+        $this->twig=$twig;   
     }
 
-    public function send($data,string $subject="Creation de Compte"):void
+    public function send($data,string $object="Creation de Compte"):void
     {
-        $from="syelaj314@gmail.com";
         $email = (new Email())
-            ->from($from)
+            ->from("syelaj314@gmail.com")
             ->to($data->getLogin())
-            ->subject($subject)
-            ->html("Bienvenue");
+            ->subject($object)
+            ->html($this->twig->render("email/index.html.twig", [
+                "data"=>$data,
+                "token"=>$data->getToken(),
+            ])); 
         $this->mailer->send($email);
 
     }

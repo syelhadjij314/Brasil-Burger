@@ -13,14 +13,5 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Gestionnaire extends User
 {
-
-    /**
-     * @return Collection<int, Produit>
-     */
-    public function getProduits(): Collection
-    {
-        return $this->produits;
-    }
-
     
 }
