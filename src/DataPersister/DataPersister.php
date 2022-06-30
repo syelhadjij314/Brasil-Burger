@@ -49,8 +49,21 @@ class DataPersister implements ContextAwareDataPersisterInterface
             }
         }
         if ($data instanceof Menu) {
-            $data->setPrix($data->getBurgers()[0]->getPrix() + $data->getBoissons()[0]->getPrix() + $data->getFrites()[0]->getPrix());
-            dd($data->getPrix());
+            $prix=0;
+
+            foreach ($data->getBurgers() as $burger) {
+                $prix+=$burger->getPrix();
+            }
+
+            foreach ($data->getBoissons() as $boisson) {
+                $prix+=$boisson->getPrix();
+            }
+            
+            foreach ($data->getFrites() as $frite) {
+                $prix+=$frite->getPrix();
+            }
+            $data->setPrix($prix);
+            // dd($data->getPrix());
         }
         $this->entityManager->persist($data);
         $this->entityManager->flush();

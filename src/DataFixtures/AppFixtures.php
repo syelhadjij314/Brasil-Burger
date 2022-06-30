@@ -19,7 +19,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $user = new User();
-        $user->setLogin('client@gmail.com');
+        $user->setLogin('gestionnaire@gmail.com');
         $user->setPrenom('Mor');
         $user->setNom('Diouf');
         $hashedPassword = $this->passwordHasher->hashPassword(
@@ -27,9 +27,10 @@ class AppFixtures extends Fixture
             'passer'
         );
         $user->setPassword($hashedPassword);
-        $user->setRoles(['ROLE_CLIENT']);
+        $user->setRoles(['ROLE_GESTIONNAIRE']);
+        $manager->persist($user);
         
-        $user1 = new User();
+        /* $user1 = new User();
         $user1->setLogin('gestionnaire@gmail.com');
         $user1->setPrenom('Mor');
         $user1->setNom('Diouf');
@@ -38,9 +39,8 @@ class AppFixtures extends Fixture
             'passer'
         );
         $user1->setPassword($hashedPassword);
-        $user1->setRoles(['ROLE_GESTIONNAIRE']);
-        $manager->persist($user);
-        $manager->persist($user1);
+        $user1->setRoles(['ROLE_GESTIONNAIRE']); */
+        // $manager->persist($user1);
 
         // $product = new Product();
         // $manager->persist($product);

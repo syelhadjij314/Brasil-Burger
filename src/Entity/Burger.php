@@ -11,15 +11,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
 #[ApiResource(
+    normalizationContext :['groups' => ['liste-simple','liste-all']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
     collectionOperations:[
         "get"=>[
             'method' => 'get',
             'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-simple']],
+            // 'normalization_context' => ['groups' => ['liste-simple']],
         ] ,
         "post"=>[
-            'denormalization_context' => ['groups' => ['liste-simple','liste-all']],
-            'normalization_context' => ['groups' => ['liste-all']]
+            // 'denormalization_context' => ['groups' => ['liste-simple','liste-all']],
+            // 'normalization_context' => ['groups' => ['liste-all']]
         ]],
     itemOperations:[
         "put"=>[
@@ -29,7 +31,7 @@ use Symfony\Component\HttpFoundation\Response;
         "get"=>[
             'method' => 'get',
             'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-all']],
+            // 'normalization_context' => ['groups' => ['liste-all']],
         ],
         ])]
 class Burger extends Produit

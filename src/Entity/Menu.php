@@ -2,24 +2,52 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\MenuRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\MenuRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\Response;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    collectionOperations: [
+        "get" => [
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-simple']],
+        ],
+        "post" => [
+            'denormalization_context' => ['groups' => ['liste-simple', 'liste-all']],
+            'normalization_context' => ['groups' => ['liste-all']]
+        ]
+    ],
+    itemOperations: [
+        "put" => [
+            "security" => "is_granted('ROLE_GESTIONNAIRE')",
+            "security_message" => "Vous n'avez pas accès à cette Ressource",
+        ],
+        "get" => [
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-all']],
+        ],
+    ]
+)]
 class Menu extends Produit
 {
 
     #[ORM\ManyToMany(targetEntity: Burger::class, inversedBy: 'menus')]
+    #[ApiSubresource()]
     private $burgers;
 
     #[ORM\ManyToMany(targetEntity: Frite::class, inversedBy: 'menus')]
+    #[ApiSubresource]
     private $frites;
 
     #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'menus')]
+    #[ApiSubresource]
     private $boissons;
 
     public function __construct()

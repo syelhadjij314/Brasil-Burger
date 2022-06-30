@@ -7,6 +7,7 @@ use App\Repository\UserRepository;
 use App\Controller\EmailValidateController;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,16 +23,19 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     collectionOperations:[
-        "get",
+        "get"=>[
+        'normalization_context' => ['groups' => ['liste-user-simple']]
+
+        ],
         "post",
         "VALIDATION" => [
         "method"=>"PATCH",
         'deserialize' => false,
         'path'=>'users/validate/{token}',
-        'controller' => EmailValidateController::class
+        'controller' => EmailValidateController::class,
+
         ]
-    
-        ],
+    ],
     itemOperations:[
         "get",
         "put"
@@ -42,20 +46,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['liste-all'])]
+    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all'])]
     protected $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Groups(['liste-all'])]
+    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all'])]
     protected $login;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:read:simple','liste-user-simple','liste-user','liste-user-all'])]
     protected $roles = [];
 
     #[ORM\Column(type: 'string')]
     protected $password;
 
     #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Produit::class)]
+    #[ApiSubresource]
     protected $produits;
 
     #[SerializedName('password')]
@@ -69,12 +75,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le nom est Obligatoire")]
-    #[Groups(['liste-all'])]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all'])]
     protected $nom;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
-    #[Groups(['liste-all'])]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all'])]
     protected $prenom;
 
     #[ORM\Column(type: 'datetime')]
@@ -88,7 +94,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roleDefault=get_called_class();
         $roleDefault= explode("\\" ,$roleDefault);
         $roleDefault=strtoupper($roleDefault[2]);
-        return $this->roles= [" ROLE_".$roleDefault];
+        return $this->roles= ["ROLE_VISITEUR","ROLE_".$roleDefault];
     }
 
     public function getId(): ?int
@@ -124,8 +130,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $this->roles=["ROLE_VISITEUR"];
+        // $this->roles=["ROLE_VISITEUR"];
         return array_unique($roles);
     }
 

@@ -3,15 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Repository\BoissonRepository;
+use App\Repository\FriteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
-// #[Entity(repositoryClass: ComplementRepository::class)
-#[ApiResource]
+#[ApiResource(
+    collectionOperations:["get"],
+    itemOperations:[]
+)]
 class Complement
 {
     private int $id;
-    private  array $frites;
-    private array $boissons;
+    private  $frites;
+    private $boissons;
 
     public function __construct()
     {

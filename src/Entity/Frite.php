@@ -12,27 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 #[ORM\Entity(repositoryClass: FriteRepository::class)]
 #[ApiResource(
-    collectionOperations:[
-        "get"=>[
-            'method' => 'get',
-            'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-simple']],
-        ] ,
-        "post"=>[
-            'denormalization_context' => ['groups' => ['liste-simple','liste-all']],
-            'normalization_context' => ['groups' => ['liste-all']]
-        ]],
-    itemOperations:[
-        "put"=>[
-            "security"=> "is_granted('ROLE_GESTIONNAIRE')",
-            "security_message"=> "Vous n'avez pas accès à cette Ressource",
-        ],
-        "get"=>[
-            'method' => 'get',
-            'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-all']],
-        ],
-        ])]
+    normalizationContext :['groups' => ['liste-simple','liste-all']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all']]
+)]
 class Frite extends Produit
 {
 
@@ -43,6 +25,7 @@ class Frite extends Produit
     {
         $this->menus = new ArrayCollection();
     }
+
 
     /**
      * @return Collection<int, Menu>

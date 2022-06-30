@@ -8,17 +8,17 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-#[ApiResource]
+#[ApiResource()]
 
 class Client extends User
 {
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['liste-all'])]
+    #[Groups(['liste-all','user:read:simple','liste-user-simple','liste-user','liste-user-all'])]
     private $adresse;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['liste-all'])]
+    #[Groups(['liste-all','user:read:simple','liste-user-simple','liste-user','liste-user-all'])]
     private $telephone;
 
     public function getAdresse(): ?string
@@ -29,7 +29,6 @@ class Client extends User
     public function setAdresse(string $adresse): self
     {
         $this->adresse = $adresse;
-
         return $this;
     }
 
@@ -41,7 +40,6 @@ class Client extends User
     public function setTelephone(string $telephone): self
     {
         $this->telephone = $telephone;
-
         return $this;
     }
 }

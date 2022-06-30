@@ -6,11 +6,13 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Repository\CatalogueRepository;
 
-
-#[ApiResource]
+#[ApiResource(
+    collectionOperations:["get"],
+    itemOperations:[]
+)]
 class Catalogue
 {
-    private int $id;
+    // private int $id;
     private array $burgers;
     private array $menus;
 

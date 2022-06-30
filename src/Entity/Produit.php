@@ -7,37 +7,59 @@ use App\Repository\ProduitRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints\Unique;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\InheritanceType("JOINED")]
-#[ORM\DiscriminatorColumn(name:"type", type:"string")]
-#[ORM\DiscriminatorMap(["produit" => "Produit", "burger" => "Burger","menu" => "Menu","frite" => "Frite","boisson" => "Boisson"])]
+#[ORM\DiscriminatorColumn(name: "type", type: "string")]
+#[ORM\DiscriminatorMap(["produit" => "Produit", "burger" => "Burger", "menu" => "Menu", "frite" => "Frite", "boisson" => "Boisson"])]
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    collectionOperations: [
+        "get" => [
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-simple']],
+        ],
+        "post" => [
+            'denormalization_context' => ['groups' => ['liste-simple', 'liste-all']],
+            'normalization_context' => ['groups' => ['liste-all']]
+        ]
+    ],
+    itemOperations: [
+        "put" => [
+            "security" => "is_granted('ROLE_GESTIONNAIRE')",
+            "security_message" => "Vous n'avez pas accès à cette Ressource",
+        ],
+        "get" => [
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['liste-all']],
+        ],
+    ]
+)]
 class Produit
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]   
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple",'liste-all',"ecrire"])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
     protected $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
+    #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
     // #[Assert\Unique(message:"Le Nom existe dèjà")]
-    #[Groups(["liste-simple",'liste-all',"ecrire"])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
     protected $nom;
 
     /* #[ORM\Column(type: 'object')]
     protected $image; */
     #[ORM\Column(type: 'integer')]
     // #[Assert\NotBlank(message:"Le Prix est Obligatoire")]
-    #[Groups(["liste-simple",'liste-all',"ecrire"])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
     protected $prix;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['liste-all',"ecrire"])]
+    #[Groups(['liste-all', "ecrire"])]
     private $isEtat;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'produits')]
@@ -46,7 +68,7 @@ class Produit
 
     public function __construct()
     {
-        $this->isEtat= true;
+        $this->isEtat = true;
     }
 
     public function getId(): ?int
@@ -113,5 +135,4 @@ class Produit
 
         return $this;
     }
-
 }
