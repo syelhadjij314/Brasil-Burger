@@ -6,6 +6,7 @@ use App\Entity\Menu;
 use App\Entity\User;
 use App\Entity\Produit;
 use App\Services\MailerService;
+use App\Services\CalculatorMenuService;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -17,12 +18,16 @@ class DataPersister implements ContextAwareDataPersisterInterface
     public function __construct(
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $encoder,
-        mailerService $mailerService
+        mailerService $mailerService,
+        CalculatorMenuService $calculatorMenuService
+
     ) 
     {
         $this->encoder = $encoder;
         $this->entityManager = $entityManager;
         $this->mailerService = $mailerService;
+        $this->calculatorMenuService = $calculatorMenuService;
+
     }
 
     /**
@@ -49,7 +54,14 @@ class DataPersister implements ContextAwareDataPersisterInterface
             }
         }
         if ($data instanceof Menu) {
-            $prix=0;
+            // dd($data->getBurgers());
+        // dd($data->getBurgers()[0]);
+
+            $prix=$this->calculatorMenuService->priceMenu($data);
+            // dd($data->getBurgers());
+            $data->setPrix($prix);
+            // dd($data);
+            /* $prix=0;
 
             foreach ($data->getBurgers() as $burger) {
                 $prix+=$burger->getPrix();
@@ -62,7 +74,7 @@ class DataPersister implements ContextAwareDataPersisterInterface
             foreach ($data->getFrites() as $frite) {
                 $prix+=$frite->getPrix();
             }
-            $data->setPrix($prix);
+            $data->setPrix($prix); */
             // dd($data->getPrix());
         }
         $this->entityManager->persist($data);
