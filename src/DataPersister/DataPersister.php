@@ -2,14 +2,18 @@
 
 namespace App\DataPersister;
 
+use ORM\Column;
 use App\Entity\Menu;
 use App\Entity\User;
+use App\Entity\Boisson;
 use App\Entity\Produit;
 use App\Services\MailerService;
 use App\Services\CalculatorMenuService;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\ORM\Mapping as ORM;
+
 
 
 class DataPersister implements ContextAwareDataPersisterInterface
@@ -54,28 +58,15 @@ class DataPersister implements ContextAwareDataPersisterInterface
             }
         }
         if ($data instanceof Menu) {
-            // dd($data->getBurgers());
-        // dd($data->getBurgers()[0]);
 
             $prix=$this->calculatorMenuService->priceMenu($data);
             // dd($data->getBurgers());
             $data->setPrix($prix);
-            // dd($data);
-            /* $prix=0;
 
-            foreach ($data->getBurgers() as $burger) {
-                $prix+=$burger->getPrix();
-            }
-
-            foreach ($data->getBoissons() as $boisson) {
-                $prix+=$boisson->getPrix();
-            }
+        }
+        if ($data instanceof Boisson) {
             
-            foreach ($data->getFrites() as $frite) {
-                $prix+=$frite->getPrix();
-            }
-            $data->setPrix($prix); */
-            // dd($data->getPrix());
+            
         }
         $this->entityManager->persist($data);
         $this->entityManager->flush();

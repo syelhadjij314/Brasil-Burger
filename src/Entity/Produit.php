@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProduitRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -14,29 +16,27 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(["produit" => "Produit", "burger" => "Burger", "menu" => "Menu", "frite" => "Frite", "boisson" => "Boisson"])]
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 #[ApiResource(
+    normalizationContext :['groups' => ['liste-simple','liste-all']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
     collectionOperations: [
         "get" => [
             'method' => 'get',
             'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-simple']],
         ],
-        "post" => [
-            'denormalization_context' => ['groups' => ['liste-simple', 'liste-all']],
-            'normalization_context' => ['groups' => ['liste-all']]
-        ]
-    ],
-    itemOperations: [
-        "put" => [
+        "post"
+        ],
+        itemOperations: [
+            "put" => [
             "security" => "is_granted('ROLE_GESTIONNAIRE')",
             "security_message" => "Vous n'avez pas accès à cette Ressource",
         ],
         "get" => [
             'method' => 'get',
             'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-all']],
-        ],
-    ]
-)]
+        ]
+    ],
+    // attributes: ["pagination_items_per_page"=> 5]
+    )]
 class Produit
 {
     #[ORM\Id]
@@ -47,7 +47,6 @@ class Produit
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
-    // #[Assert\Unique(message:"Le Nom existe dèjà")]
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
     protected $nom;
 
@@ -66,9 +65,16 @@ class Produit
     #[Groups(['liste-all'])]
     private $gestionnaire;
 
+    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'produits')]
+    private $commandes;
+
+    #[ORM\ManyToOne(targetEntity: ProduitCommande::class, inversedBy: 'produits')]
+    private $produitCommande;
+
     public function __construct()
     {
         $this->isEtat = true;
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -132,6 +138,45 @@ class Produit
     public function setGestionnaire(?User $gestionnaire): self
     {
         $this->gestionnaire = $gestionnaire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->addProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        if ($this->commandes->removeElement($commande)) {
+            $commande->removeProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function getProduitCommande(): ?ProduitCommande
+    {
+        return $this->produitCommande;
+    }
+
+    public function setProduitCommande(?ProduitCommande $produitCommande): self
+    {
+        $this->produitCommande = $produitCommande;
 
         return $this;
     }

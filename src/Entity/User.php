@@ -86,6 +86,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime')]
     protected $expireAt;
 
+    #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Commande::class)]
+    private $commandes;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -95,6 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roleDefault= explode("\\" ,$roleDefault);
         $roleDefault=strtoupper($roleDefault[2]);
         return $this->roles= ["ROLE_VISITEUR","ROLE_".$roleDefault];
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -271,6 +275,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->token= rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
         $this->expireAt= new \DateTime("+1 days");
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setGestionnaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getGestionnaire() === $this) {
+                $commande->setGestionnaire(null);
+            }
+        }
+
+        return $this;
     }
 
 }

@@ -10,31 +10,14 @@ use Symfony\Component\HttpFoundation\Response;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Length;
+
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ApiResource(
-    collectionOperations: [
-        "get" => [
-            'method' => 'get',
-            'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-simple']],
-        ],
-        "post" => [
-            'denormalization_context' => ['groups' => ['liste-simple', 'liste-all']],
-            'normalization_context' => ['groups' => ['liste-all']]
-        ]
-    ],
-    itemOperations: [
-        "put" => [
-            "security" => "is_granted('ROLE_GESTIONNAIRE')",
-            "security_message" => "Vous n'avez pas accès à cette Ressource",
-        ],
-        "get" => [
-            'method' => 'get',
-            'status' => Response::HTTP_OK,
-            'normalization_context' => ['groups' => ['liste-all']],
-        ],
-    ]
+    normalizationContext :['groups' => ['liste-simple','liste-all']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
 )]
 class Menu extends Produit
 {
@@ -42,16 +25,24 @@ class Menu extends Produit
     #[ORM\ManyToMany(targetEntity: Burger::class, inversedBy: 'menus')]
     #[ApiSubresource()]
     #[Groups(['liste-all'])]
+    #[Assert\NotBlank(message: "il faut ajouter au moins 1 burger")]
+    #[Assert\Count(min:1)]
     private $burgers;
 
     #[ORM\ManyToMany(targetEntity: Frite::class, inversedBy: 'menus')]
     #[ApiSubresource]
     #[Groups(['liste-all'])]
+    #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
+    #[Assert\Count(min:1)]
+
     private $frites;
 
     #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'menus')]
     #[ApiSubresource]
     #[Groups(['liste-all'])]
+    #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
+    #[Assert\Count(min:1)]
+
     private $boissons;
 
     public function __construct()
