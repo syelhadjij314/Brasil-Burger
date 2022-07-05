@@ -16,8 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(["produit" => "Produit", "burger" => "Burger", "menu" => "Menu", "frite" => "Frite", "boisson" => "Boisson"])]
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
     collectionOperations: [
         "get" => [
             'method' => 'get',
@@ -42,13 +42,8 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','menu-simple'])]
     protected $id;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    protected $nom;
 
     /* #[ORM\Column(type: 'object')]
     protected $image; */
@@ -59,39 +54,24 @@ class Produit
 
     #[ORM\Column(type: 'boolean')]
     #[Groups(['liste-all', "ecrire"])]
-    private $isEtat;
+    private $isEtat=true;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'produits')]
     #[Groups(['liste-all'])]
     private $gestionnaire;
 
-    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'produits')]
-    private $commandes;
-
-    #[ORM\ManyToOne(targetEntity: ProduitCommande::class, inversedBy: 'produits')]
-    private $produitCommande;
+    #[ORM\OneToMany(mappedBy: 'produit', targetEntity: ProduitCommande::class)]
+    private $produitCommandes;
 
     public function __construct()
     {
-        $this->isEtat = true;
         $this->commandes = new ArrayCollection();
+        $this->produitCommandes = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
     }
 
     /*  public function getImage(): ?object
@@ -143,41 +123,33 @@ class Produit
     }
 
     /**
-     * @return Collection<int, Commande>
+     * @return Collection<int, ProduitCommande>
      */
-    public function getCommandes(): Collection
+    public function getProduitCommandes(): Collection
     {
-        return $this->commandes;
+        return $this->produitCommandes;
     }
 
-    public function addCommande(Commande $commande): self
+    public function addProduitCommande(ProduitCommande $produitCommande): self
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes[] = $commande;
-            $commande->addProduit($this);
+        if (!$this->produitCommandes->contains($produitCommande)) {
+            $this->produitCommandes[] = $produitCommande;
+            $produitCommande->setProduit($this);
         }
 
         return $this;
     }
 
-    public function removeCommande(Commande $commande): self
+    public function removeProduitCommande(ProduitCommande $produitCommande): self
     {
-        if ($this->commandes->removeElement($commande)) {
-            $commande->removeProduit($this);
+        if ($this->produitCommandes->removeElement($produitCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($produitCommande->getProduit() === $this) {
+                $produitCommande->setProduit(null);
+            }
         }
 
         return $this;
     }
 
-    public function getProduitCommande(): ?ProduitCommande
-    {
-        return $this->produitCommande;
-    }
-
-    public function setProduitCommande(?ProduitCommande $produitCommande): self
-    {
-        $this->produitCommande = $produitCommande;
-
-        return $this;
-    }
 }

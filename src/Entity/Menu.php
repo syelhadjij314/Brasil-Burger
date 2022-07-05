@@ -11,115 +11,150 @@ use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
 )]
 class Menu extends Produit
 {
 
-    #[ORM\ManyToMany(targetEntity: Burger::class, inversedBy: 'menus')]
-    #[ApiSubresource()]
-    #[Groups(['liste-all'])]
-    #[Assert\NotBlank(message: "il faut ajouter au moins 1 burger")]
-    #[Assert\Count(min:1)]
-    private $burgers;
-
-    #[ORM\ManyToMany(targetEntity: Frite::class, inversedBy: 'menus')]
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBoisson::class,cascade:['persist'])]
     #[ApiSubresource]
-    #[Groups(['liste-all'])]
-    #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
+    #[Groups(["menu-simple"])]
+    #[SerializedName('boissons')]
+    #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
     #[Assert\Count(min:1)]
+    private $menuBoissons;
 
-    private $frites;
-
-    #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'menus')]
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class,cascade:['persist'])]
     #[ApiSubresource]
-    #[Groups(['liste-all'])]
-    #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
+    #[Groups(["menu-simple"])]
+    #[SerializedName('burgers')]
+    #[Assert\NotBlank(message: "Ajouter au moins un burger")]
     #[Assert\Count(min:1)]
+    private $menuBurgers;
 
-    private $boissons;
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuFrite::class,cascade:['persist'])]
+    #[ApiSubresource]
+    #[Groups(["menu-simple"])]   
+    #[SerializedName('frites')]
+    #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
+    #[Assert\Count(min:1)]
+    private $menuFrites;
+
+    #[ORM\Column(type: 'string', length: 255,unique:true)]
+    #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    private $nom;
 
     public function __construct()
     {
-        $this->burgers = new ArrayCollection();
-        $this->frites = new ArrayCollection();
-        $this->boissons = new ArrayCollection();
+        $this->menuBoissons = new ArrayCollection();
+        $this->menuBurgers = new ArrayCollection();
+        $this->menuFrites = new ArrayCollection();
     }
-
     /**
-     * @return Collection<int, Burger>
+     * @return Collection<int, MenuBoisson>
      */
-    public function getBurgers(): Collection
+    public function getMenuBoissons(): Collection
     {
-        return $this->burgers;
+        return $this->menuBoissons;
     }
 
-    public function addBurger(Burger $burger): self
+    public function addMenuBoisson(MenuBoisson $menuBoisson): self
     {
-        if (!$this->burgers->contains($burger)) {
-            $this->burgers[] = $burger;
+        if (!$this->menuBoissons->contains($menuBoisson)) {
+            $this->menuBoissons[] = $menuBoisson;
+            $menuBoisson->setMenu($this);
         }
 
         return $this;
     }
 
-    public function removeBurger(Burger $burger): self
+    public function removeMenuBoisson(MenuBoisson $menuBoisson): self
     {
-        $this->burgers->removeElement($burger);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Frite>
-     */
-    public function getFrites(): Collection
-    {
-        return $this->frites;
-    }
-
-    public function addFrite(Frite $frite): self
-    {
-        if (!$this->frites->contains($frite)) {
-            $this->frites[] = $frite;
+        if ($this->menuBoissons->removeElement($menuBoisson)) {
+            // set the owning side to null (unless already changed)
+            if ($menuBoisson->getMenu() === $this) {
+                $menuBoisson->setMenu(null);
+            }
         }
 
         return $this;
     }
 
-    public function removeFrite(Frite $frite): self
-    {
-        $this->frites->removeElement($frite);
-
-        return $this;
-    }
-
     /**
-     * @return Collection<int, Boisson>
+     * @return Collection<int, MenuBurger>
      */
-    public function getBoissons(): Collection
+    public function getMenuBurgers(): Collection
     {
-        return $this->boissons;
+        return $this->menuBurgers;
     }
 
-    public function addBoisson(Boisson $boisson): self
+    public function addMenuBurger(MenuBurger $menuBurger): self
     {
-        if (!$this->boissons->contains($boisson)) {
-            $this->boissons[] = $boisson;
+        if (!$this->menuBurgers->contains($menuBurger)) {
+            $this->menuBurgers[] = $menuBurger;
+            $menuBurger->setMenu($this);
         }
 
         return $this;
     }
 
-    public function removeBoisson(Boisson $boisson): self
+    public function removeMenuBurger(MenuBurger $menuBurger): self
     {
-        $this->boissons->removeElement($boisson);
+        if ($this->menuBurgers->removeElement($menuBurger)) {
+            // set the owning side to null (unless already changed)
+            if ($menuBurger->getMenu() === $this) {
+                $menuBurger->setMenu(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MenuFrite>
+     */
+    public function getMenuFrites(): Collection
+    {
+        return $this->menuFrites;
+    }
+
+    public function addMenuFrite(MenuFrite $menuFrite): self
+    {
+        if (!$this->menuFrites->contains($menuFrite)) {
+            $this->menuFrites[] = $menuFrite;
+            $menuFrite->setMenu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenuFrite(MenuFrite $menuFrite): self
+    {
+        if ($this->menuFrites->removeElement($menuFrite)) {
+            // set the owning side to null (unless already changed)
+            if ($menuFrite->getMenu() === $this) {
+                $menuFrite->setMenu(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
 
         return $this;
     }

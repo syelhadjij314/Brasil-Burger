@@ -1,24 +1,28 @@
 <?php
 namespace App\Services ;
 
+use App\Entity\Menu;
+use App\Entity\MenuFrite;
+use App\Entity\MenuBurger;
+use App\Entity\MenuBoisson;
+
 class CalculatorMenuService{
+    /**
+     * @param Menu $data
+     */
     public function priceMenu($data)
     {
         $prix=0;
-        foreach ($data->getBurgers() as $burger) {
-            
-            $prix+=$burger->getPrix();
-
+        foreach ($data->getMenuBurgers() as $burger) {          
+            $prix+=$burger->getBurger()->getPrix()*$burger->getQuantiteBurger();
         }
-        foreach ($data->getBoissons() as $boisson) {
-            // dd("ok1");
 
-            $prix+=$boisson->getPrix();
+        foreach ($data->getMenuBoissons() as $boisson) {
+            $prix+=$boisson->getBoisson()->getPrix()*$boisson->getQuantiteBoisson();
         }
-        foreach ($data->getFrites() as $frite) {
-            // dd("ok3");
 
-            $prix+=$frite->getPrix();
+        foreach ($data->getMenuFrites() as $frite) {
+            $prix+=$frite->getFrite()->getPrix()*$frite->getQuantiteFrite();
         }
         return $prix;
     }

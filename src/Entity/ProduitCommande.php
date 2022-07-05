@@ -2,35 +2,36 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ProduitCommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProduitCommandeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
+)]
 class ProduitCommande
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+
     private $id;
 
     #[ORM\Column(type: 'float')]
+    #[Groups(["menu-simple"])]
     private $quantiteProduit;
 
-    #[ORM\OneToMany(mappedBy: 'produitCommande', targetEntity: Commande::class)]
-    private $commandes;
+    #[ORM\ManyToOne(targetEntity: Commande::class, inversedBy: 'produitCommandes')]
+    private $commande;
 
-    #[ORM\OneToMany(mappedBy: 'produitCommande', targetEntity: Produit::class)]
-    private $produits;
-
-    public function __construct()
-    {
-        $this->commandes = new ArrayCollection();
-        $this->produits = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(targetEntity: Produit::class, inversedBy: 'produitCommandes')]
+    #[Groups(["menu-simple"])]
+    private $produit;
 
     public function getId(): ?int
     {
@@ -49,63 +50,28 @@ class ProduitCommande
         return $this;
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
-    public function getCommandes(): Collection
+    public function getCommande(): ?Commande
     {
-        return $this->commandes;
+        return $this->commande;
     }
 
-    public function addCommande(Commande $commande): self
+    public function setCommande(?Commande $commande): self
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes[] = $commande;
-            $commande->setProduitCommande($this);
-        }
+        $this->commande = $commande;
 
         return $this;
     }
 
-    public function removeCommande(Commande $commande): self
+    public function getProduit(): ?Produit
     {
-        if ($this->commandes->removeElement($commande)) {
-            // set the owning side to null (unless already changed)
-            if ($commande->getProduitCommande() === $this) {
-                $commande->setProduitCommande(null);
-            }
-        }
+        return $this->produit;
+    }
+
+    public function setProduit(?Produit $produit): self
+    {
+        $this->produit = $produit;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Produit>
-     */
-    public function getProduits(): Collection
-    {
-        return $this->produits;
-    }
-
-    public function addProduit(Produit $produit): self
-    {
-        if (!$this->produits->contains($produit)) {
-            $this->produits[] = $produit;
-            $produit->setProduitCommande($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduit(Produit $produit): self
-    {
-        if ($this->produits->removeElement($produit)) {
-            // set the owning side to null (unless already changed)
-            if ($produit->getProduitCommande() === $this) {
-                $produit->setProduitCommande(null);
-            }
-        }
-
-        return $this;
-    }
 }
