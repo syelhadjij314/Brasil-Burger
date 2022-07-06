@@ -14,37 +14,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: BoissonRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext :['groups' => ['liste-boisson']],
+    denormalizationContext:['groups' => ['liste-boisson']]
+)]
 class Boisson extends Produit
 {
-    
-    #[Groups(['liste-all'])]
+
+    #[Groups(['liste-all','liste-boisson'])]
     #[ORM\Column(type: 'string', length: 255)]
     private $taille;
 
     #[ORM\OneToMany(mappedBy: 'boisson', targetEntity: MenuBoisson::class)]
     // #[Groups(['menu-simple'])]
-    
+
     private $menuBoissons;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    private $nom;
-
-
-    /* #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'boissons')]
-    private $menus; */
-
-    
+    /* #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: "Le Libelle est Obligatoire")]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson'])]
+    private $nom; */
 
     public function __construct()
     {
-        // $this->menus = new ArrayCollection();
         $this->menuBoissons = new ArrayCollection();
     }
-
-
     public function getTaille(): ?string
     {
         return $this->taille;
@@ -56,75 +50,36 @@ class Boisson extends Produit
 
         return $this;
     }
+
     /**
-     * @return Collection<int, Menu>
+     * @return Collection<int, MenuBoisson>
      */
-   /*  public function getMenus(): Collection
+    public function getMenuBoissons(): Collection
     {
-        return $this->menus;
+        return $this->menuBoissons;
     }
 
-    public function addMenu(Menu $menu): self
+    public function addMenuBoisson(MenuBoisson $menuBoisson): self
     {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->addBoisson($this);
+        if (!$this->menuBoissons->contains($menuBoisson)) {
+            $this->menuBoissons[] = $menuBoisson;
+            $menuBoisson->setBoisson($this);
         }
 
         return $this;
     }
 
-    public function removeMenu(Menu $menu): self
+    public function removeMenuBoisson(MenuBoisson $menuBoisson): self
     {
-        if ($this->menus->removeElement($menu)) {
-            $menu->removeBoisson($this);
+        if ($this->menuBoissons->removeElement($menuBoisson)) {
+            // set the owning side to null (unless already changed)
+            if ($menuBoisson->getBoisson() === $this) {
+                $menuBoisson->setBoisson(null);
+            }
         }
 
         return $this;
-    } */
-
-   /**
-    * @return Collection<int, MenuBoisson>
-    */
-   public function getMenuBoissons(): Collection
-   {
-       return $this->menuBoissons;
-   }
-
-   public function addMenuBoisson(MenuBoisson $menuBoisson): self
-   {
-       if (!$this->menuBoissons->contains($menuBoisson)) {
-           $this->menuBoissons[] = $menuBoisson;
-           $menuBoisson->setBoisson($this);
-       }
-
-       return $this;
-   }
-
-   public function removeMenuBoisson(MenuBoisson $menuBoisson): self
-   {
-       if ($this->menuBoissons->removeElement($menuBoisson)) {
-           // set the owning side to null (unless already changed)
-           if ($menuBoisson->getBoisson() === $this) {
-               $menuBoisson->setBoisson(null);
-           }
-       }
-
-       return $this;
-   }
-
-   public function getNom(): ?string
-   {
-       return $this->nom;
-   }
-
-   public function setNom(string $nom): self
-   {
-       $this->nom = $nom;
-
-       return $this;
-   }
+    }
 
     
-
 }

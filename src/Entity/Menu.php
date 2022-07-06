@@ -27,29 +27,30 @@ class Menu extends Produit
     #[Groups(["menu-simple"])]
     #[SerializedName('boissons')]
     #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
-    #[Assert\Count(min:1)]
+    // #[Assert\Count(min:0)]
+    #[Assert\Valid()]
     private $menuBoissons;
 
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class,cascade:['persist'])]
     #[ApiSubresource]
     #[Groups(["menu-simple"])]
     #[SerializedName('burgers')]
-    #[Assert\NotBlank(message: "Ajouter au moins un burger")]
-    #[Assert\Count(min:1)]
+    #[Assert\Count(min:1,minMessage:"Ajouter au moins 1 burger")]
+    #[Assert\Valid()]
     private $menuBurgers;
 
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuFrite::class,cascade:['persist'])]
     #[ApiSubresource]
     #[Groups(["menu-simple"])]   
     #[SerializedName('frites')]
-    #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
-    #[Assert\Count(min:1)]
+    // #[Assert\Count(min:0)]
+    #[Assert\Valid()]
     private $menuFrites;
 
-    #[ORM\Column(type: 'string', length: 255,unique:true)]
+    /* #[ORM\Column(type: 'string', length: 255,unique:true)]
     #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    private $nom;
+    private $nom; */
 
     public function __construct()
     {
@@ -147,7 +148,7 @@ class Menu extends Produit
         return $this;
     }
 
-    public function getNom(): ?string
+    /* public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -157,7 +158,7 @@ class Menu extends Produit
         $this->nom = $nom;
 
         return $this;
-    }
+    } */
 
 
 }

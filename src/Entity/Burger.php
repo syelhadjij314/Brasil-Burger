@@ -21,15 +21,13 @@ class Burger extends Produit
     #[ORM\OneToMany(mappedBy: 'burger', targetEntity: MenuBurger::class)]
     private $menuBurgers;
 
-    #[ORM\Column(type: 'string', length: 255,unique:true)]
+    /* #[ORM\Column(type: 'string', length: 255,unique:true)]
     #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    private $nom;
+    private $nom; */
 
     public function __construct()
     {
-        parent::__construct();
-        // $this->menus = new ArrayCollection();
         $this->menuBurgers = new ArrayCollection();
     }
 
@@ -63,7 +61,7 @@ class Burger extends Produit
         return $this;
     }
 
-    public function getNom(): ?string
+    /* public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -73,5 +71,5 @@ class Burger extends Produit
         $this->nom = $nom;
 
         return $this;
-    }
+    } */
 }

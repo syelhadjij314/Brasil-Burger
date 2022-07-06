@@ -46,11 +46,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all'])]
+    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
     protected $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all'])]
+    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
     protected $login;
 
     #[ORM\Column(type: 'json')]
@@ -75,12 +75,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le nom est Obligatoire")]
-    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all'])]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
     protected $nom;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
-    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all'])]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
     protected $prenom;
 
     #[ORM\Column(type: 'datetime')]

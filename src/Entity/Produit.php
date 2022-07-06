@@ -9,6 +9,7 @@ use App\Repository\ProduitRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\InheritanceType("JOINED")]
@@ -16,8 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(["produit" => "Produit", "burger" => "Burger", "menu" => "Menu", "frite" => "Frite", "boisson" => "Boisson"])]
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','liste-boisson']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','liste-boisson']],
     collectionOperations: [
         "get" => [
             'method' => 'get',
@@ -42,26 +43,38 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','menu-simple'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','menu-simple','liste-boisson'])]
     protected $id;
 
-    /* #[ORM\Column(type: 'object')]
-    protected $image; */
     #[ORM\Column(type: 'integer')]
     // #[Assert\NotBlank(message:"Le Prix est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson'])]
     protected $prix;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['liste-all', "ecrire"])]
-    private $isEtat=true;
+    #[Groups(['liste-all', "ecrire",'liste-boisson'])]
+    protected $isEtat=true;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'produits')]
-    #[Groups(['liste-all'])]
-    private $gestionnaire;
+    #[Groups(['liste-all','liste-boisson'])]
+    protected $gestionnaire;
 
     #[ORM\OneToMany(mappedBy: 'produit', targetEntity: ProduitCommande::class)]
-    private $produitCommandes;
+    protected $produitCommandes;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
+    // #[Assert\Unique()]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    protected $nom;
+
+    #[ORM\Column(type: 'blob', nullable: true)]
+    #[Groups(["liste-simple"])]
+    protected $image;
+
+    // #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    #[SerializedName("image")]
+    protected $imageString;
 
     public function __construct()
     {
@@ -74,18 +87,6 @@ class Produit
         return $this->id;
     }
 
-    /*  public function getImage(): ?object
-    {
-        return $this->image;
-    }
-
-    public function setImage(object $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
- */
     public function getPrix(): ?int
     {
         return $this->prix;
@@ -152,4 +153,48 @@ class Produit
         return $this;
     }
 
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return utf8_encode(base64_encode(stream_get_contents($this->image)));
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of imageString
+     */ 
+    public function getImageString()
+    {
+        return $this->imageString;
+    }
+
+    /**
+     * Set the value of imageString
+     *
+     * @return  self
+     */ 
+    public function setImageString($imageString)
+    {
+        $this->imageString = $imageString;
+
+        return $this;
+    }
 }

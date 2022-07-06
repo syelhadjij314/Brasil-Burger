@@ -2,9 +2,7 @@
 namespace App\Services ;
 
 use App\Entity\Menu;
-use App\Entity\MenuFrite;
-use App\Entity\MenuBurger;
-use App\Entity\MenuBoisson;
+
 
 class CalculatorMenuService{
     /**

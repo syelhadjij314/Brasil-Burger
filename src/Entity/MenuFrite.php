@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\MenuFriteRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: MenuFriteRepository::class)]
 #[ApiResource(
@@ -22,6 +24,8 @@ class MenuFrite
 
     #[ORM\Column(type: 'integer')]
     #[Groups(['menu-simple'])]
+    #[Assert\NotBlank(message: "La quantite est requise")]
+    #[Assert\Positive(message:"La quantite ne doit pas etre nulle")]
     private $quantiteFrite;
 
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuFrites')]

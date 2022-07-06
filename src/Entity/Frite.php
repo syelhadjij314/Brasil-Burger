@@ -23,47 +23,15 @@ class Frite extends Produit
     #[ORM\OneToMany(mappedBy: 'frite', targetEntity: MenuFrite::class)]
     private $menuFrites;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    /* #[ORM\Column(type: 'string', length: 255, unique: true)]
     #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    private $nom;
-
-    /* #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'frites')]
-    private $menus; */
+    private $nom; */
 
     public function __construct()
     {
-        // $this->menus = new ArrayCollection();
         $this->menuFrites = new ArrayCollection();
     }
-
-
-    /**
-     * @return Collection<int, Menu>
-     */
-    /*  public function getMenus(): Collection
-    {
-        return $this->menus;
-    }
-
-    public function addMenu(Menu $menu): self
-    {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->addFrite($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMenu(Menu $menu): self
-    {
-        if ($this->menus->removeElement($menu)) {
-            $menu->removeFrite($this);
-        }
-
-        return $this;
-    } */
 
     /**
      * @return Collection<int, MenuFrite>
@@ -95,7 +63,7 @@ class Frite extends Produit
         return $this;
     }
 
-    public function getNom(): ?string
+    /* public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -105,5 +73,5 @@ class Frite extends Produit
         $this->nom = $nom;
 
         return $this;
-    }
+    } */
 }

@@ -7,6 +7,9 @@ use App\Repository\MenuRepository;
 use App\Repository\BurgerRepository;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
+use App\Entity\Burger;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class DataProviderCatalogue implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
 {
@@ -18,13 +21,14 @@ class DataProviderCatalogue implements ContextAwareCollectionDataProviderInterfa
 
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool
     {
-        return $resourceClass == Catalogue::class;
+        return $resourceClass == Catalogue::class or $resourceClass == Burger::class;
     }
-
+    
     public function getCollection(string $resourceClass, ?string $operationName = null, array $context = [])
     {
 
         if ($resourceClass == Catalogue::class) {
+            // dd();
             return [
 
                 ['menus' => $this->menuRepository->findAll()],
@@ -32,6 +36,7 @@ class DataProviderCatalogue implements ContextAwareCollectionDataProviderInterfa
 
             ];
         }
+        
 
     }
 }
