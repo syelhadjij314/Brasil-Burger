@@ -25,7 +25,7 @@ class Boisson extends Produit
     #[ORM\Column(type: 'string', length: 255)]
     private $taille;
 
-    #[ORM\OneToMany(mappedBy: 'boisson', targetEntity: MenuBoisson::class)]
+    #[ORM\OneToMany(mappedBy: 'boisson', targetEntity: MenuBoisson::class,cascade:['persist'])]
     // #[Groups(['menu-simple'])]
 
     private $menuBoissons;

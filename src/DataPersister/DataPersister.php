@@ -55,8 +55,8 @@ class DataPersister implements ContextAwareDataPersisterInterface
         if ($data instanceof Menu) {
 
             $prix=$this->calculatorMenuService->priceMenu($data);
-            // dd($data->getBurgers());
             $data->setPrix($prix);
+            // dd($data);
         }
     
         if ($data instanceof Produit) {           

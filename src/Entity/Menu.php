@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use App\Services\CallbackMenuService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,6 +20,9 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
     denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
 )]
+
+#[Assert\Callback([CallbackMenuService::class, 'validate'])]
+
 class Menu extends Produit
 {
 
@@ -27,7 +31,6 @@ class Menu extends Produit
     #[Groups(["menu-simple"])]
     #[SerializedName('boissons')]
     #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
-    // #[Assert\Count(min:0)]
     #[Assert\Valid()]
     private $menuBoissons;
 
@@ -43,14 +46,8 @@ class Menu extends Produit
     #[ApiSubresource]
     #[Groups(["menu-simple"])]   
     #[SerializedName('frites')]
-    // #[Assert\Count(min:0)]
     #[Assert\Valid()]
     private $menuFrites;
-
-    /* #[ORM\Column(type: 'string', length: 255,unique:true)]
-    #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    private $nom; */
 
     public function __construct()
     {
@@ -114,10 +111,8 @@ class Menu extends Produit
                 $menuBurger->setMenu(null);
             }
         }
-
         return $this;
     }
-
     /**
      * @return Collection<int, MenuFrite>
      */
@@ -132,10 +127,8 @@ class Menu extends Produit
             $this->menuFrites[] = $menuFrite;
             $menuFrite->setMenu($this);
         }
-
         return $this;
     }
-
     public function removeMenuFrite(MenuFrite $menuFrite): self
     {
         if ($this->menuFrites->removeElement($menuFrite)) {
@@ -144,21 +137,7 @@ class Menu extends Produit
                 $menuFrite->setMenu(null);
             }
         }
-
         return $this;
     }
-
-    /* public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    } */
-
 
 }

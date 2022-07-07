@@ -20,10 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','liste-boisson']],
     denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','liste-boisson']],
     collectionOperations: [
-        "get" => [
-            'method' => 'get',
-            'status' => Response::HTTP_OK,
-        ],
+        "get",
         "post"
         ],
         itemOperations: [
@@ -69,10 +66,10 @@ class Produit
     protected $nom;
 
     #[ORM\Column(type: 'blob', nullable: true)]
-    #[Groups(["liste-simple"])]
+    #[Groups(["liste-simple", 'liste-all', 'liste-all_burger'])]
     protected $image;
 
-    // #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
     #[SerializedName("image")]
     protected $imageString;
 
@@ -167,7 +164,9 @@ class Produit
 
     public function getImage()
     {
-        return utf8_encode(base64_encode(stream_get_contents($this->image)));
+
+            return is_resource($this->image) ? utf8_encode(base64_encode(stream_get_contents($this->image))) : $this->image;
+        
     }
 
     public function setImage($image): self

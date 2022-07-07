@@ -31,7 +31,7 @@ class MenuFrite
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuFrites')]
     private $menu;
 
-    #[ORM\ManyToOne(targetEntity: Frite::class, inversedBy: 'menuFrites')]
+    #[ORM\ManyToOne(targetEntity: Frite::class, inversedBy: 'menuFrites',cascade:['persist'])]
     #[Groups(['menu-simple'])]
     private $frite;
 

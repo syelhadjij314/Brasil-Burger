@@ -31,7 +31,7 @@ class MenuBoisson
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuBoissons')]
     private $menu;
 
-    #[ORM\ManyToOne(targetEntity: Boisson::class, inversedBy: 'menuBoissons')]
+    #[ORM\ManyToOne(targetEntity: Boisson::class, inversedBy: 'menuBoissons',cascade:['persist'])]
     #[Groups(['menu-simple'])]
     private $boisson;
 

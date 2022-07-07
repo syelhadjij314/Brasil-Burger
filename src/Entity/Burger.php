@@ -7,14 +7,14 @@ use App\Repository\BurgerRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\Groups;
+// use Symfony\Component\Validator\Constraints as Assert;
+// use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
+    /* normalizationContext :['groups' => ['liste-simple','liste-all']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all']], */
 )]
 class Burger extends Produit
 {
