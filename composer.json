@@ -81,7 +81,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "compile" : [ "php bin/console doctrine:migration:migrate"]
     },
     "conflict": {
         "symfony/symfony": "*"

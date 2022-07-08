@@ -81,10 +81,8 @@ class Menu extends Produit
                 $menuBoisson->setMenu(null);
             }
         }
-
         return $this;
     }
-
     /**
      * @return Collection<int, MenuBurger>
      */

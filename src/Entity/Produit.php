@@ -56,9 +56,6 @@ class Produit
     #[Groups(['liste-all','liste-boisson'])]
     protected $gestionnaire;
 
-    #[ORM\OneToMany(mappedBy: 'produit', targetEntity: ProduitCommande::class)]
-    protected $produitCommandes;
-
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
     // #[Assert\Unique()]
@@ -73,9 +70,11 @@ class Produit
     #[SerializedName("image")]
     protected $imageString;
 
+    #[ORM\OneToMany(mappedBy: 'produit', targetEntity: ProduitCommande::class)]
+    private $produitCommandes;
+
     public function __construct()
     {
-        $this->commandes = new ArrayCollection();
         $this->produitCommandes = new ArrayCollection();
     }
 
@@ -116,36 +115,6 @@ class Produit
     public function setGestionnaire(?User $gestionnaire): self
     {
         $this->gestionnaire = $gestionnaire;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ProduitCommande>
-     */
-    public function getProduitCommandes(): Collection
-    {
-        return $this->produitCommandes;
-    }
-
-    public function addProduitCommande(ProduitCommande $produitCommande): self
-    {
-        if (!$this->produitCommandes->contains($produitCommande)) {
-            $this->produitCommandes[] = $produitCommande;
-            $produitCommande->setProduit($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduitCommande(ProduitCommande $produitCommande): self
-    {
-        if ($this->produitCommandes->removeElement($produitCommande)) {
-            // set the owning side to null (unless already changed)
-            if ($produitCommande->getProduit() === $this) {
-                $produitCommande->setProduit(null);
-            }
-        }
 
         return $this;
     }
@@ -193,6 +162,36 @@ class Produit
     public function setImageString($imageString)
     {
         $this->imageString = $imageString;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProduitCommande>
+     */
+    public function getProduitCommandes(): Collection
+    {
+        return $this->produitCommandes;
+    }
+
+    public function addProduitCommande(ProduitCommande $produitCommande): self
+    {
+        if (!$this->produitCommandes->contains($produitCommande)) {
+            $this->produitCommandes[] = $produitCommande;
+            $produitCommande->setProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduitCommande(ProduitCommande $produitCommande): self
+    {
+        if ($this->produitCommandes->removeElement($produitCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($produitCommande->getProduit() === $this) {
+                $produitCommande->setProduit(null);
+            }
+        }
 
         return $this;
     }

@@ -12,21 +12,21 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','commande-simple']],
 )]
 class Commande
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["menu-simple"])]
+    #[Groups(['commande-simple'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $numeroCommande;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime')]
     private $dateAt;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -39,24 +39,24 @@ class Commande
     private $client;
 
     #[ORM\ManyToOne(targetEntity: Zone::class, inversedBy: 'commandes')]
-    // #[Groups(["menu-simple"])]
+    #[Groups(['commande-simple'])]
     private $zone;
 
     #[ORM\ManyToOne(targetEntity: Livraison::class, inversedBy: 'commandes')]
     // #[Groups(["menu-simple"])]
     private $livraison;
 
-    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: ProduitCommande::class)]
+    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: ProduitCommande::class,cascade:['persist'])]
     #[SerializedName("produit")]
-    #[Groups(["menu-simple"])]
-    private $produitCommandes;
+    #[Groups(['commande-simple'])]
 
-    
+    private $produitCommandes;
 
     public function __construct()
     {
-        $this->produits = new ArrayCollection();
+        $this->numeroCommande= "NUM"." new \DateTime()";
         $this->produitCommandes = new ArrayCollection();
+        $this->dateAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -76,12 +76,12 @@ class Commande
         return $this;
     }
 
-    public function getDateAt(): ?\DateTimeImmutable
+    public function getDateAt(): ?\DateTime
     {
         return $this->dateAt;
     }
 
-    public function setDateAt(\DateTimeImmutable $dateAt): self
+    public function setDateAt(\DateTime $dateAt): self
     {
         $this->dateAt = $dateAt;
 
@@ -178,4 +178,5 @@ class Commande
         return $this;
     }
 
+    
 }

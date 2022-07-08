@@ -36,6 +36,9 @@ class Quartier
     #[Assert\NotBlank(message: "Le zone est Obligatoire")]
     private $zone;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'quartiers')]
+    private $gestionnaire;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,18 @@ class Quartier
     public function setZone(?Zone $zone): self
     {
         $this->zone = $zone;
+
+        return $this;
+    }
+
+    public function getGestionnaire(): ?User
+    {
+        return $this->gestionnaire;
+    }
+
+    public function setGestionnaire(?User $gestionnaire): self
+    {
+        $this->gestionnaire = $gestionnaire;
 
         return $this;
     }

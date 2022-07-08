@@ -2,19 +2,22 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ZoneRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ZoneRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: ZoneRepository::class)]
 #[ApiResource(
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','commande-simple']],
     // attributes: ["security" => "is_granted('ROLE_GESTIONNAIRE')"],
     collectionOperations: [
-        "get",
+        "get",    
         "post" => [ "security_post_denormalize" => "is_granted('ACCESS_CREATE', object)" ],
     ],
     itemOperations: [
@@ -28,21 +31,31 @@ class Zone
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['commande-simple'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255, unique:true)]
     #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
+    #[Groups(['commande-simple'])]
+
     private $nom;
 
     #[ORM\Column(type: 'float')]
     #[Assert\NotBlank(message: "Le Prix est Obligatoire")]
+    #[Groups(['commande-simple'])]
+
     private $prix;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Commande::class)]
     private $commandes;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Quartier::class)]
+    #[Groups(['commande-simple'])]
     private $quartiers;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'zones')]
+    // #[Groups(['commande-simple'])]
+    private $gestionnaire;
 
     public function __construct()
     {
@@ -135,6 +148,18 @@ class Zone
                 $quartier->setZone(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getGestionnaire(): ?User
+    {
+        return $this->gestionnaire;
+    }
+
+    public function setGestionnaire(?User $gestionnaire): self
+    {
+        $this->gestionnaire = $gestionnaire;
 
         return $this;
     }

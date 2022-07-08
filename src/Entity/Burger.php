@@ -13,18 +13,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
 #[ApiResource(
-    /* normalizationContext :['groups' => ['liste-simple','liste-all']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all']], */
+    normalizationContext :['groups' => ['liste-simple','liste-all']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all']],
 )]
 class Burger extends Produit
 {
     #[ORM\OneToMany(mappedBy: 'burger', targetEntity: MenuBurger::class)]
     private $menuBurgers;
-
-    /* #[ORM\Column(type: 'string', length: 255,unique:true)]
-    #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    private $nom; */
 
     public function __construct()
     {
@@ -61,15 +56,4 @@ class Burger extends Produit
         return $this;
     }
 
-    /* public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    } */
 }

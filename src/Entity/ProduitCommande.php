@@ -3,61 +3,47 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ProduitCommandeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProduitCommandeRepository::class)]
-#[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
-)]
+#[ApiResource]
 class ProduitCommande
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-
+    #[Groups(['commande-simple'])]
     private $id;
 
-    #[ORM\Column(type: 'float')]
-    #[Groups(["menu-simple"])]
-    private $quantiteProduit;
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['commande-simple'])]
+    private $quantite;
+
+    #[ORM\ManyToOne(targetEntity: Produit::class, inversedBy: 'produitCommandes')]
+    #[Groups(['commande-simple'])]
+    private $produit;
 
     #[ORM\ManyToOne(targetEntity: Commande::class, inversedBy: 'produitCommandes')]
     private $commande;
 
-    #[ORM\ManyToOne(targetEntity: Produit::class, inversedBy: 'produitCommandes')]
-    #[Groups(["menu-simple"])]
-    private $produit;
+    #[ORM\Column(type: 'float',nullable:true)]
+    private $prix;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getQuantiteProduit(): ?float
+    public function getQuantite(): ?int
     {
-        return $this->quantiteProduit;
+        return $this->quantite;
     }
 
-    public function setQuantiteProduit(float $quantiteProduit): self
+    public function setQuantite(int $quantite): self
     {
-        $this->quantiteProduit = $quantiteProduit;
-
-        return $this;
-    }
-
-    public function getCommande(): ?Commande
-    {
-        return $this->commande;
-    }
-
-    public function setCommande(?Commande $commande): self
-    {
-        $this->commande = $commande;
+        $this->quantite = $quantite;
 
         return $this;
     }
@@ -74,4 +60,27 @@ class ProduitCommande
         return $this;
     }
 
+    public function getCommande(): ?Commande
+    {
+        return $this->commande;
+    }
+
+    public function setCommande(?Commande $commande): self
+    {
+        $this->commande = $commande;
+
+        return $this;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(float $prix): self
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
 }

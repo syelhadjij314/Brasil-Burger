@@ -40,8 +40,10 @@ class UserSubscriber implements EventSubscriberInterface
     {
         if ($args->getObject() instanceof Produit ||
         $args->getObject() instanceof Zone ||
-        $args->getObject() instanceof Quartier) {
+        $args->getObject() instanceof Quartier)
+        {
             $args->getObject()->setGestionnaire($this->getGestionnaire());
+            // dd($args->getObject());
         }
     }
 }

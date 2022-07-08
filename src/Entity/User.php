@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -89,6 +88,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Commande::class)]
     private $commandes;
 
+    #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Zone::class)]
+    private $zones;
+
+    #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Quartier::class)]
+    private $quartiers;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -99,6 +104,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roleDefault=strtoupper($roleDefault[2]);
         return $this->roles= ["ROLE_VISITEUR","ROLE_".$roleDefault];
         $this->commandes = new ArrayCollection();
+        $this->zones = new ArrayCollection();
+        $this->quartiers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -301,6 +308,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($commande->getGestionnaire() === $this) {
                 $commande->setGestionnaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Zone>
+     */
+    public function getZones(): Collection
+    {
+        return $this->zones;
+    }
+
+    public function addZone(Zone $zone): self
+    {
+        if (!$this->zones->contains($zone)) {
+            $this->zones[] = $zone;
+            $zone->setGestionnaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeZone(Zone $zone): self
+    {
+        if ($this->zones->removeElement($zone)) {
+            // set the owning side to null (unless already changed)
+            if ($zone->getGestionnaire() === $this) {
+                $zone->setGestionnaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Quartier>
+     */
+    public function getQuartiers(): Collection
+    {
+        return $this->quartiers;
+    }
+
+    public function addQuartier(Quartier $quartier): self
+    {
+        if (!$this->quartiers->contains($quartier)) {
+            $this->quartiers[] = $quartier;
+            $quartier->setGestionnaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuartier(Quartier $quartier): self
+    {
+        if ($this->quartiers->removeElement($quartier)) {
+            // set the owning side to null (unless already changed)
+            if ($quartier->getGestionnaire() === $this) {
+                $quartier->setGestionnaire(null);
             }
         }
 

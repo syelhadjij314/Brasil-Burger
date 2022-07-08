@@ -63,15 +63,4 @@ class Frite extends Produit
         return $this;
     }
 
-    /* public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    } */
 }

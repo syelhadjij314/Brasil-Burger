@@ -38,6 +38,7 @@ class Boisson extends Produit
     public function __construct()
     {
         $this->menuBoissons = new ArrayCollection();
+    
     }
     public function getTaille(): ?string
     {
@@ -81,5 +82,4 @@ class Boisson extends Produit
         return $this;
     }
 
-    
 }
