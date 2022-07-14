@@ -2,13 +2,17 @@
 namespace App\DataPersister;
 
 use App\Entity\Commande;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Services\CalculPrixCommandeService;
+use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 
-class CommandeDataPersister{
+class CommandeDataPersister implements ContextAwareDataPersisterInterface{
 
-    /* public function __construct()
+    public function __construct(CalculPrixCommandeService $prixCommande,EntityManagerInterface $entityManager)
     {
-        $this->numeroCommande=$numeroCommande;
-    } */
+        $this->prixCommande=$prixCommande;
+        $this->entityManager=$entityManager;
+    }
 
     /**
      * {@inheritdoc}
@@ -22,9 +26,10 @@ class CommandeDataPersister{
     {
     
         if ($data instanceof Commande) {
-            // $num= new \DateTime();
-            $data->setNumeroCommande($data->getNumeroCommande());
+            $data->setNumeroCommande($data->getNumeroCommande());               
+            $this->prixCommande->montantCommande($data);               
         }
+        
         $this->entityManager->persist($data);
         $this->entityManager->flush();
     }

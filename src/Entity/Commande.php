@@ -49,12 +49,15 @@ class Commande
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: ProduitCommande::class,cascade:['persist'])]
     #[SerializedName("produit")]
     #[Groups(['commande-simple'])]
-
     private $produitCommandes;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['commande-simple'])]
+    private $montant;
 
     public function __construct()
     {
-        $this->numeroCommande= "NUM"." new \DateTime()";
+        $this->numeroCommande= "NUM".date('ymdhis');
         $this->produitCommandes = new ArrayCollection();
         $this->dateAt = new \DateTime();
     }
@@ -108,7 +111,6 @@ class Commande
     public function setGestionnaire(?User $gestionnaire): self
     {
         $this->gestionnaire = $gestionnaire;
-
         return $this;
     }
 
@@ -174,6 +176,18 @@ class Commande
                 $produitCommande->setCommande(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMontant(): ?float
+    {
+        return $this->montant;
+    }
+
+    public function setMontant(?float $montant): self
+    {
+        $this->montant = $montant;
 
         return $this;
     }

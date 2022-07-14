@@ -22,7 +22,6 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 )]
 
 #[Assert\Callback([CallbackMenuService::class, 'validate'])]
-
 class Menu extends Produit
 {
 

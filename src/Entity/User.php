@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
-
+// #[ORM\table(name:"utilisateur")]
 #[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type", type:"string")]
 #[ORM\DiscriminatorMap(["user" => "User","client" => "Client","gestionnaire" => "Gestionnaire"])]
