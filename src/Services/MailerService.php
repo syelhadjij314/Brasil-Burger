@@ -13,11 +13,11 @@ class MailerService{
         $this->twig=$twig;   
     }
 
-    public function send($data,string $object="Creation de Compte"):void
+    public function send($data,string $object,$loginTo):void
     {
         $email = (new Email())
             ->from("syelaj314@gmail.com")
-            ->to($data->getLogin())
+            ->to($loginTo)
             ->subject($object)
             ->html($this->twig->render("email/index.html.twig", [
                 "data"=>$data,

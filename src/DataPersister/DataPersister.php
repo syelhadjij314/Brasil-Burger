@@ -49,7 +49,7 @@ class DataPersister implements ContextAwareDataPersisterInterface
                 $data->setPassword($password);
                 // dd($data);
                 $data->eraseCredentials();
-                $this->mailerService->send($data);
+                $this->mailerService->send($data,"Creation de Compte",$data->getLogin());
             }
         }
         if ($data instanceof Menu) {

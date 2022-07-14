@@ -48,11 +48,15 @@ class Menu extends Produit
     #[Assert\Valid()]
     private $menuFrites;
 
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: CommandeMenu::class)]
+    private $commandeMenus;
+
     public function __construct()
     {
         $this->menuBoissons = new ArrayCollection();
         $this->menuBurgers = new ArrayCollection();
         $this->menuFrites = new ArrayCollection();
+        $this->commandeMenus = new ArrayCollection();
     }
     /**
      * @return Collection<int, MenuBoisson>
@@ -134,6 +138,36 @@ class Menu extends Produit
                 $menuFrite->setMenu(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommandeMenu>
+     */
+    public function getCommandeMenus(): Collection
+    {
+        return $this->commandeMenus;
+    }
+
+    public function addCommandeMenu(CommandeMenu $commandeMenu): self
+    {
+        if (!$this->commandeMenus->contains($commandeMenu)) {
+            $this->commandeMenus[] = $commandeMenu;
+            $commandeMenu->setMenu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeMenu(CommandeMenu $commandeMenu): self
+    {
+        if ($this->commandeMenus->removeElement($commandeMenu)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeMenu->getMenu() === $this) {
+                $commandeMenu->setMenu(null);
+            }
+        }
+
         return $this;
     }
 

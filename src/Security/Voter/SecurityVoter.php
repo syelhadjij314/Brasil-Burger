@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Commande;
 use App\Entity\Quartier;
 use App\Entity\Zone;
 use Symfony\Component\Security\Core\Security;
@@ -21,8 +22,8 @@ class SecurityVoter extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        $supportsAttribute = in_array($attribute, ['ACCESS_CREATE', 'ACCESS_READ', 'ACCESS_EDIT', 'ACCESS_DELETE']);
-        $supportsSubject = $subject instanceof Quartier || $subject instanceof Zone;
+        $supportsAttribute = in_array($attribute, ['ACCESS_CREATE','ACCESS_READ', 'ACCESS_EDIT', 'ACCESS_DELETE']);
+        $supportsSubject = $subject instanceof Quartier || $subject instanceof Zone || $subject instanceof Commande;
 
         return $supportsAttribute && $supportsSubject;
     }
@@ -38,7 +39,7 @@ class SecurityVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case 'ACCESS_CREATE':
-                if ( $this->security->isGranted("ROLE_GESTIONNAIRE") ) { 
+                if ( $this->security->isGranted("ROLE_GESTIONNAIRE") || $this->security->isGranted("ROLE_CLIENT")) { 
                     return true;
                 }
                 // logic to determine if the user can EDIT

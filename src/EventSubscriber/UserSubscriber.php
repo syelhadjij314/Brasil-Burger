@@ -2,21 +2,25 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\Produit;
-use App\Entity\Quartier;
 use App\Entity\Zone;
+use App\Entity\Produit;
+use App\Entity\Commande;
+use App\Entity\Quartier;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Services\MailerService;
 
 class UserSubscriber implements EventSubscriberInterface
 {
     private ?TokenInterface $token;
-    public function __construct(TokenStorageInterface $tokenStorage)
+    // private MailerService $mailerService;
+    public function __construct(TokenStorageInterface $tokenStorage,MailerService $mailerService)
     {
         $this->token = $tokenStorage->getToken();
+        $this->mailerService=$mailerService;
     }
     public static function getSubscribedEvents(): array
     {
@@ -36,6 +40,18 @@ class UserSubscriber implements EventSubscriberInterface
         }
         return $user;
     }
+    private function getClient()
+    {
+        //dd($this->token);
+        if (null === $token = $this->token) {
+            return null;
+        }
+        if (!is_object($user = $token->getUser())) {
+            // e.g. anonymous authentication
+            return null;
+        }
+        return $user;
+    }
     public function prePersist(LifecycleEventArgs $args)
     {
         if ($args->getObject() instanceof Produit ||
@@ -44,6 +60,11 @@ class UserSubscriber implements EventSubscriberInterface
         {
             $args->getObject()->setGestionnaire($this->getGestionnaire());
             // dd($args->getObject());
+        }
+        if ($args->getObject() instanceof Commande) {
+            $args->getObject()->setClient($this->getClient());
+            // $args->getObject()->mailerService->send($args,"Confirmation de Commande",$args->getObject()->setClient($this->getClient()));
+            
         }
     }
 }

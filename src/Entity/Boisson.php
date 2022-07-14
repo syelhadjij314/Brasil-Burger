@@ -30,6 +30,10 @@ class Boisson extends Produit
 
     private $menuBoissons;
 
+    #[ORM\OneToMany(mappedBy: 'boisson', targetEntity: CommandeBoisson::class)]
+    private $commandeBoissons;
+
+
     /* #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: "Le Libelle est Obligatoire")]
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson'])]
@@ -38,6 +42,7 @@ class Boisson extends Produit
     public function __construct()
     {
         $this->menuBoissons = new ArrayCollection();
+        $this->commandeBoissons = new ArrayCollection();
     
     }
     public function getTaille(): ?string
@@ -76,6 +81,36 @@ class Boisson extends Produit
             // set the owning side to null (unless already changed)
             if ($menuBoisson->getBoisson() === $this) {
                 $menuBoisson->setBoisson(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommandeBoisson>
+     */
+    public function getCommandeBoissons(): Collection
+    {
+        return $this->commandeBoissons;
+    }
+
+    public function addCommandeBoisson(CommandeBoisson $commandeBoisson): self
+    {
+        if (!$this->commandeBoissons->contains($commandeBoisson)) {
+            $this->commandeBoissons[] = $commandeBoisson;
+            $commandeBoisson->setBoisson($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeBoisson(CommandeBoisson $commandeBoisson): self
+    {
+        if ($this->commandeBoissons->removeElement($commandeBoisson)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeBoisson->getBoisson() === $this) {
+                $commandeBoisson->setBoisson(null);
             }
         }
 
