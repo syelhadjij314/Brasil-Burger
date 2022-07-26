@@ -62,11 +62,11 @@ class Produit
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
     protected $nom;
 
-    #[ORM\Column(type: 'blob', nullable: true)]
+    #[ORM\Column(type: 'blob')]
     #[Groups(['liste-simple-read'])]
     protected $image;
 
-    #[SerializedName("image")]
+    #[SerializedName("images")]
     #[Groups(["liste-simple"])]
     protected $imageString;
 
@@ -125,7 +125,6 @@ class Produit
 
     public function getImage()
     {
-
         return is_resource($this->image) ? (base64_encode(stream_get_contents($this->image))) : ($this->image);
         
     }
