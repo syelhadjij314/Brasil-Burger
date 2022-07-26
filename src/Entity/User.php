@@ -40,6 +40,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         "put"
         ]
 )]
+#[ORM\Table("utilisateur")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
