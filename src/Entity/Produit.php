@@ -66,7 +66,7 @@ class Produit
     #[Groups(['liste-simple-read'])]
     protected $image;
 
-    #[SerializedName("images")]
+    #[SerializedName("image")]
     #[Groups(["liste-simple"])]
     protected $imageString;
 
@@ -126,7 +126,7 @@ class Produit
     public function getImage()
     {
 
-        return is_resource($this->image) ? (base64_encode(stream_get_contents($this->image))) : null;
+        return is_resource($this->image) ? (base64_encode(stream_get_contents($this->image))) : ($this->image);
         
     }
 
