@@ -17,8 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(["produit" => "Produit", "burger" => "Burger", "menu" => "Menu", "frite" => "Frite", "boisson" => "Boisson"])]
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','liste-boisson']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','liste-boisson']],
+    normalizationContext :['groups' => ['liste-simple','liste-simple-read','liste-all','menu-simple','liste-boisson']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','liste-boisson',"image-read"]],
     collectionOperations: [
         "get",
         "post"
@@ -40,7 +40,7 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','menu-simple','liste-boisson'])]
+    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read"])]
     protected $id;
 
     #[ORM\Column(type: 'integer')]
@@ -63,11 +63,11 @@ class Produit
     protected $nom;
 
     #[ORM\Column(type: 'blob', nullable: true)]
-    #[Groups(["liste-simple", 'liste-all', 'liste-all_burger'])]
+    #[Groups(['liste-simple-read'])]
     protected $image;
 
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
-    #[SerializedName("image")]
+    #[SerializedName("images")]
+    #[Groups(["liste-simple"])]
     protected $imageString;
 
     public function getId(): ?int
@@ -126,7 +126,7 @@ class Produit
     public function getImage()
     {
 
-            return is_resource($this->image) ? utf8_encode(base64_encode(stream_get_contents($this->image))) : $this->image;
+        return is_resource($this->image) ? (base64_encode(stream_get_contents($this->image))) : null;
         
     }
 

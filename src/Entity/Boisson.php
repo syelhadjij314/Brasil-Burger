@@ -33,6 +33,9 @@ class Boisson extends Produit
     #[ORM\OneToMany(mappedBy: 'boisson', targetEntity: CommandeBoisson::class)]
     private $commandeBoissons;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $quantiteStock;
+
 
     /* #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: "Le Libelle est Obligatoire")]
@@ -113,6 +116,18 @@ class Boisson extends Produit
                 $commandeBoisson->setBoisson(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getQuantiteStock(): ?int
+    {
+        return $this->quantiteStock;
+    }
+
+    public function setQuantiteStock(?int $quantiteStock): self
+    {
+        $this->quantiteStock = $quantiteStock;
 
         return $this;
     }

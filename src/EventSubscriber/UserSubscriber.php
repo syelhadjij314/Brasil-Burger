@@ -17,7 +17,7 @@ class UserSubscriber implements EventSubscriberInterface
 {
     private ?TokenInterface $token;
     // private MailerService $mailerService;
-    public function __construct(TokenStorageInterface $tokenStorage,MailerService $mailerService)
+    public function __construct(TokenStorageInterface $tokenStorage,mailerService $mailerService)
     {
         $this->token = $tokenStorage->getToken();
         $this->mailerService=$mailerService;
@@ -63,7 +63,7 @@ class UserSubscriber implements EventSubscriberInterface
         }
         if ($args->getObject() instanceof Commande) {
             $args->getObject()->setClient($this->getClient());
-            // $args->getObject()->mailerService->send($args,"Confirmation de Commande",$args->getObject()->setClient($this->getClient()));
+            // $this->mailerService->send("Confirmation de Commande",$args->getObject()->setClient($this->getClient())->getClient()->getLogin());
             
         }
     }

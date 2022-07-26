@@ -9,7 +9,7 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 
 class CommandeDataPersister implements ContextAwareDataPersisterInterface{
 
-    public function __construct(CalculPrixCommandeService $prixCommande,MailerService $mailerService,EntityManagerInterface $entityManager)
+    public function __construct(CalculPrixCommandeService $prixCommande,mailerService $mailerService,EntityManagerInterface $entityManager)
     {
         $this->prixCommande=$prixCommande;
         $this->entityManager=$entityManager;
@@ -29,7 +29,7 @@ class CommandeDataPersister implements ContextAwareDataPersisterInterface{
 
             $data->setNumeroCommande($data->getNumeroCommande());               
             $this->prixCommande->montantCommande($data);
-            $this->mailerService->send($data,"Confirmation de Commande",$data->getClient()->getLogin());
+            // $this->mailerService->send($data,"Confirmation de Commande",$data->getClient()->getLogin());
         }
         
         $this->entityManager->persist($data);
