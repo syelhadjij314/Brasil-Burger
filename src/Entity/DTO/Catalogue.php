@@ -1,19 +1,29 @@
 <?php
+namespace App\Entity\DTO;
 
-namespace App\Entity;
-
-use ApiPlatform\Core\Annotation\ApiResource;
-use Doctrine\Common\Collections\ArrayCollection;
 use App\Repository\CatalogueRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    collectionOperations:["get"],
-    itemOperations:[]
+    collectionOperations:[
+        "get"=>[
+            "method"=> "get",
+            "path" => "/catalogues",
+            "status" => Response::HTTP_OK,
+            "normalization_context"=>["groups"=>["catalogue:red"]]
+        ],
+    ],
 )]
 class Catalogue
 {
     // private int $id;
+    #[Groups(['catalogue:read'])]
     private array $burgers;
+
+    #[Groups(['catalogue:read'])]
     private array $menus;
 
     public function __construct()

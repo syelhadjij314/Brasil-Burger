@@ -2,7 +2,7 @@
 
 namespace App\DataProvider;
 
-use App\Entity\Catalogue;
+use App\Entity\DTO\Catalogue;
 use App\Repository\MenuRepository;
 use App\Repository\BurgerRepository;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;

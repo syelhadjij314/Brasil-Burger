@@ -40,12 +40,12 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read"])]
+    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read","catalogue:read"])]
     protected $id;
 
     #[ORM\Column(type: 'integer')]
     // #[Assert\NotBlank(message:"Le Prix est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson',"catalogue:read"])]
     protected $prix;
 
     #[ORM\Column(type: 'boolean')]
@@ -59,11 +59,11 @@ class Produit
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
     // #[Assert\Unique()]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger',"catalogue:read"])]
     protected $nom;
 
     #[ORM\Column(type: 'blob')]
-    #[Groups(['liste-simple-read'])]
+    #[Groups(['liste-simple-read',"catalogue:read"])]
     protected $image;
 
     #[SerializedName("images")]
