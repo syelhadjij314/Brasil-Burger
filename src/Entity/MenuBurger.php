@@ -7,6 +7,7 @@ use App\Repository\MenuBurgerRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: MenuBurgerRepository::class)]
 #[ApiResource(
@@ -22,7 +23,8 @@ class MenuBurger
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['menu-simple'])]
+    #[Groups(['menu-simple',"detail:read"])]
+    #[SerializedName("quantite")]
     #[Assert\NotBlank(message: "La quantite est requise")]
     #[Assert\Positive(message:"La quantite ne doit pas etre nulle")]
     private $quantiteBurger;
@@ -31,7 +33,7 @@ class MenuBurger
     private $menu;
 
     #[ORM\ManyToOne(targetEntity: Burger::class, inversedBy: 'menuBurgers')]
-    #[Groups(['menu-simple'])]
+    #[Groups(['menu-simple',"detail:read"])]
     #[Assert\NotBlank(message:"Il faut au moins un burger")]
     private $burger;
 

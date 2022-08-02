@@ -7,6 +7,7 @@ use App\Repository\MenuBoissonRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: MenuBoissonRepository::class)]
 #[ApiResource(
@@ -23,7 +24,8 @@ class MenuBoisson
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['menu-simple'])]
+    #[Groups(['menu-simple',"detail:read"])]
+    #[SerializedName("quantite")]
     #[Assert\NotBlank(message: "La quantite est requise")]
     #[Assert\Positive(message:"La quantite ne doit pas etre nulle")]
     private $quantiteBoisson;
@@ -32,7 +34,7 @@ class MenuBoisson
     private $menu;
 
     #[ORM\ManyToOne(targetEntity: Boisson::class, inversedBy: 'menuBoissons',cascade:['persist'])]
-    #[Groups(['menu-simple'])]
+    #[Groups(['menu-simple',"detail:read"])]
     private $boisson;
 
     public function getId(): ?int

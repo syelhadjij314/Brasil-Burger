@@ -1,30 +1,34 @@
 <?php
+
 namespace App\Entity\DTO;
 
 use App\Repository\CatalogueRepository;
+use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
+    normalizationContext :['groups' => ['catalogue:read']],
     collectionOperations:[
         "get"=>[
-            "method"=> "get",
             "path" => "/catalogues",
             "status" => Response::HTTP_OK,
-            "normalization_context"=>["groups"=>["catalogue:red"]]
-        ],
+        ]
     ],
 )]
 class Catalogue
 {
-    // private int $id;
-    #[Groups(['catalogue:read'])]
-    private array $burgers;
+    // #[Groups(['catalogue:read'])]
+    
+    private int $id;
 
     #[Groups(['catalogue:read'])]
-    private array $menus;
+    private $burgers;
+
+    #[Groups(['catalogue:read'])]
+    private  $menus;
 
     public function __construct()
     {
@@ -72,4 +76,12 @@ class Catalogue
         return $this;
     }
 
+
+    /**
+     * Get the value of id
+     */ 
+    public function getId()
+    {
+        return $this->id;
+    }
 }

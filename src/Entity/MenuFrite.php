@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\MenuFriteRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -23,7 +24,8 @@ class MenuFrite
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['menu-simple'])]
+    #[Groups(['menu-simple',"detail:read"])]
+    #[SerializedName("quantite")]
     #[Assert\NotBlank(message: "La quantite est requise")]
     #[Assert\Positive(message:"La quantite ne doit pas etre nulle")]
     private $quantiteFrite;
@@ -32,7 +34,7 @@ class MenuFrite
     private $menu;
 
     #[ORM\ManyToOne(targetEntity: Frite::class, inversedBy: 'menuFrites',cascade:['persist'])]
-    #[Groups(['menu-simple'])]
+    #[Groups(['menu-simple',"detail:read"])]
     private $frite;
 
     public function getId(): ?int

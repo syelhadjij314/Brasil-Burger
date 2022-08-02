@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Boisson extends Produit
 {
 
-    #[Groups(['liste-all','liste-boisson'])]
+    #[Groups(['liste-all','liste-boisson',"detail:read"])]
     #[ORM\Column(type: 'string', length: 255)]
     private $taille;
 

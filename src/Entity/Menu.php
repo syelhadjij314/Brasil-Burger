@@ -27,7 +27,7 @@ class Menu extends Produit
 
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBoisson::class,cascade:['persist'])]
     #[ApiSubresource]
-    #[Groups(["menu-simple"])]
+    #[Groups(["menu-simple","detail:read"])]
     #[SerializedName('boissons')]
     #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
     #[Assert\Valid()]
@@ -35,7 +35,7 @@ class Menu extends Produit
 
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class,cascade:['persist'])]
     #[ApiSubresource]
-    #[Groups(["menu-simple"])]
+    #[Groups(["menu-simple","detail:read"])]
     #[SerializedName('burgers')]
     #[Assert\Count(min:1,minMessage:"Ajouter au moins 1 burger")]
     #[Assert\Valid()]
@@ -43,7 +43,7 @@ class Menu extends Produit
 
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuFrite::class,cascade:['persist'])]
     #[ApiSubresource]
-    #[Groups(["menu-simple"])]   
+    #[Groups(["menu-simple","detail:read"])]   
     #[SerializedName('frites')]
     #[Assert\Valid()]
     private $menuFrites;
