@@ -6,6 +6,7 @@ use App\Entity\Zone;
 use App\Entity\Produit;
 use App\Entity\Commande;
 use App\Entity\Quartier;
+use App\Entity\Taille;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -56,7 +57,8 @@ class UserSubscriber implements EventSubscriberInterface
     {
         if ($args->getObject() instanceof Produit ||
         $args->getObject() instanceof Zone ||
-        $args->getObject() instanceof Quartier)
+        $args->getObject() instanceof Quartier ||
+        $args->getObject() instanceof Taille)
         {
             $args->getObject()->setGestionnaire($this->getGestionnaire());
             // dd($args->getObject());

@@ -60,7 +60,7 @@ class DataPersister implements ContextAwareDataPersisterInterface
         }
     
         if ($data instanceof Produit) {           
-            $data->setImage(\file_get_contents($data->getImageString()));
+            $data->setImage(file_get_contents($data->getImageString()));
         }
         // dd($data);
         $this->entityManager->persist($data);

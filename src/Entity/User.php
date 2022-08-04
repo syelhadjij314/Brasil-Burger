@@ -95,6 +95,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Quartier::class)]
     private $quartiers;
 
+    #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Taille::class)]
+    private Collection $tailles;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -107,6 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->commandes = new ArrayCollection();
         $this->zones = new ArrayCollection();
         $this->quartiers = new ArrayCollection();
+        $this->tailles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -369,6 +373,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($quartier->getGestionnaire() === $this) {
                 $quartier->setGestionnaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Taille>
+     */
+    public function getTailles(): Collection
+    {
+        return $this->tailles;
+    }
+
+    public function addTaille(Taille $taille): self
+    {
+        if (!$this->tailles->contains($taille)) {
+            $this->tailles->add($taille);
+            $taille->setGestionnaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTaille(Taille $taille): self
+    {
+        if ($this->tailles->removeElement($taille)) {
+            // set the owning side to null (unless already changed)
+            if ($taille->getGestionnaire() === $this) {
+                $taille->setGestionnaire(null);
             }
         }
 

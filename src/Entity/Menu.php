@@ -25,13 +25,13 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class Menu extends Produit
 {
 
-    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBoisson::class,cascade:['persist'])]
+    /* #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBoisson::class,cascade:['persist'])]
     #[ApiSubresource]
     #[Groups(["menu-simple","detail:read"])]
     #[SerializedName('boissons')]
     #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
     #[Assert\Valid()]
-    private $menuBoissons;
+    private $menuBoissons; */
 
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class,cascade:['persist'])]
     #[ApiSubresource]
@@ -51,17 +51,26 @@ class Menu extends Produit
     #[ORM\OneToMany(mappedBy: 'menu', targetEntity: CommandeMenu::class)]
     private $commandeMenus;
 
+    #[ApiSubresource]
+    #[Groups(["menu-simple","detail:read"])]
+    #[SerializedName('boissons')]
+    #[Assert\NotBlank(message: "Ajouter au moins une taille boisson")]
+    #[Assert\Valid()]
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuTaille::class,cascade:['persist'])]
+    private Collection $menuTailles;
+
     public function __construct()
     {
-        $this->menuBoissons = new ArrayCollection();
+        // $this->menuBoissons = new ArrayCollection();
         $this->menuBurgers = new ArrayCollection();
         $this->menuFrites = new ArrayCollection();
         $this->commandeMenus = new ArrayCollection();
+        $this->menuTailles = new ArrayCollection();
     }
     /**
      * @return Collection<int, MenuBoisson>
      */
-    public function getMenuBoissons(): Collection
+    /* public function getMenuBoissons(): Collection
     {
         return $this->menuBoissons;
     }
@@ -85,7 +94,7 @@ class Menu extends Produit
             }
         }
         return $this;
-    }
+    } */
     /**
      * @return Collection<int, MenuBurger>
      */
@@ -165,6 +174,36 @@ class Menu extends Produit
             // set the owning side to null (unless already changed)
             if ($commandeMenu->getMenu() === $this) {
                 $commandeMenu->setMenu(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MenuTaille>
+     */
+    public function getMenuTailles(): Collection
+    {
+        return $this->menuTailles;
+    }
+
+    public function addMenuTaille(MenuTaille $menuTaille): self
+    {
+        if (!$this->menuTailles->contains($menuTaille)) {
+            $this->menuTailles->add($menuTaille);
+            $menuTaille->setMenu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenuTaille(MenuTaille $menuTaille): self
+    {
+        if ($this->menuTailles->removeElement($menuTaille)) {
+            // set the owning side to null (unless already changed)
+            if ($menuTaille->getMenu() === $this) {
+                $menuTaille->setMenu(null);
             }
         }
 
