@@ -64,11 +64,11 @@ class Produit
     protected $nom;
 
     #[ORM\Column(type: 'blob')]
-    #[Groups(["liste-simple",'liste-simple-read','catalogue:read','liste-boisson',"detail:read"])]
+    #[Groups(["liste-simple", 'liste-all','liste-simple-read','catalogue:read','liste-boisson',"detail:read"])]
     protected $image;
 
     #[SerializedName("images")]
-    #[Groups(["liste-simple"])]
+    #[Groups(["image-read",])]
     protected $imageString;
 
     public function getId(): ?int

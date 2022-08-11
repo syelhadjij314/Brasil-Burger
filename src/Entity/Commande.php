@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 #[ApiResource(
+    forceEager: false,
     normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple']],
     denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','commande-simple']],
     collectionOperations: [
@@ -60,17 +61,6 @@ class Commande
     // #[Groups(["menu-simple"])]
     private $livraison;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['commande-simple'])]
-    private $montant;
-
-    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeBoisson::class,cascade:["persist"])]
-    #[SerializedName('boissons')]
-    #[Groups(['commande-simple'])]
-    // #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
-    #[Assert\Valid()]
-    private $commandeBoissons;
-
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeBurger::class,cascade:["persist"])]
     #[SerializedName('burgers')]
     #[Groups(['commande-simple'])]
@@ -91,15 +81,25 @@ class Commande
     #[Assert\Valid()]
     private $commandeMenus;
 
+    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeBoissonTaille::class,cascade:["persist"])]
+    #[SerializedName('boissons')]
+    #[Groups(['commande-simple'])]
+    private Collection $commandeBoissonTailles;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    // #[Groups(['commande-simple'])]
+    private $montant;
+
     public function __construct()
     {
         $this->numeroCommande= "NUM".date('ymdhis');
         $this->produitCommandes = new ArrayCollection();
         $this->dateAt = new \DateTime();
-        $this->commandeBoissons = new ArrayCollection();
+        // $this->commandeBoissons = new ArrayCollection();
         $this->commandeBurgers = new ArrayCollection();
         $this->commandeFrites = new ArrayCollection();
         $this->commandeMenus = new ArrayCollection();
+        $this->commandeBoissonTailles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -205,7 +205,7 @@ class Commande
     /**
      * @return Collection<int, CommandeBoisson>
      */
-    public function getCommandeBoissons(): Collection
+    /* public function getCommandeBoissons(): Collection
     {
         return $this->commandeBoissons;
     }
@@ -230,7 +230,7 @@ class Commande
         }
 
         return $this;
-    }
+    } */
 
     /**
      * @return Collection<int, CommandeBurger>
@@ -316,6 +316,36 @@ class Commande
             // set the owning side to null (unless already changed)
             if ($commandeMenu->getCommande() === $this) {
                 $commandeMenu->setCommande(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommandeBoissonTaille>
+     */
+    public function getCommandeBoissonTailles(): Collection
+    {
+        return $this->commandeBoissonTailles;
+    }
+
+    public function addCommandeBoissonTaille(CommandeBoissonTaille $commandeBoissonTaille): self
+    {
+        if (!$this->commandeBoissonTailles->contains($commandeBoissonTaille)) {
+            $this->commandeBoissonTailles->add($commandeBoissonTaille);
+            $commandeBoissonTaille->setCommande($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeBoissonTaille(CommandeBoissonTaille $commandeBoissonTaille): self
+    {
+        if ($this->commandeBoissonTailles->removeElement($commandeBoissonTaille)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeBoissonTaille->getCommande() === $this) {
+                $commandeBoissonTaille->setCommande(null);
             }
         }
 

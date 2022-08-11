@@ -5,9 +5,9 @@ class CalculPrixCommandeService{
 
     public function montantCommande($data){
         $prix=0;
-        foreach ($data->getCommandeBoissons() as $boisson) {
-            $prix+=$boisson->getBoisson()->getPrix()*$boisson->getQuantite();
-            $boisson->setPrix($boisson->getBoisson()->getPrix());
+        foreach ($data->getCommandeBoissonTailles() as $boisson) {
+            $prix+=$boisson->getBoissonTaille()->getTaille()->getPrix()*$boisson->getQuantite();
+            $boisson->setPrix($boisson->getBoissonTaille()->getTaille()->getPrix());
         }
         foreach ($data->getCommandeBurgers() as $burger) {
             $prix+=$burger->getBurger()->getPrix()*$burger->getQuantite();

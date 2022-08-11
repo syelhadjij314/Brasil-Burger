@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ZoneRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple']],
+    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple','zone-read']],
     denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','commande-simple']],
     // attributes: ["security" => "is_granted('ROLE_GESTIONNAIRE')"],
     collectionOperations: [
@@ -31,18 +31,18 @@ class Zone
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','zone-read'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255, unique:true)]
     #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','zone-read'])]
 
     private $nom;
 
     #[ORM\Column(type: 'float')]
     #[Assert\NotBlank(message: "Le Prix est Obligatoire")]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','zone-read'])]
 
     private $prix;
 
@@ -50,7 +50,7 @@ class Zone
     private $commandes;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Quartier::class)]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','zone-read'])]
     private $quartiers;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'zones')]

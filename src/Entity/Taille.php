@@ -31,15 +31,16 @@ class Taille
     #[Groups(['liste-all','liste-boisson',"detail:read"])]
     private ?string $libelle = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['liste-all','liste-boisson',"detail:read"])]
+    private ?float $prix = null;
+
     #[ORM\OneToMany(mappedBy: 'taille', targetEntity: BoissonTaille::class,cascade:['persist'])]
+    #[Groups(['liste-all','liste-boisson',"detail:read"])]
     private Collection $boissonTailles;
 
     #[ORM\OneToMany(mappedBy: 'taille', targetEntity: MenuTaille::class,cascade:['persist'])]
     private Collection $menuTailles;
-
-    #[ORM\Column(nullable: true)]
-    #[Groups(['liste-all','liste-boisson',"detail:read"])]
-    private ?float $prix = null;
 
     #[ORM\ManyToOne(inversedBy: 'tailles')]
     private ?User $gestionnaire = null;

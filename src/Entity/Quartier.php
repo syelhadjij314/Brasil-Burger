@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\QuartierRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\QuartierRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -26,10 +27,12 @@ class Quartier
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['commande-simple','zone-read'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255, unique:true)]
     #[Assert\NotBlank(message: "Le libelle est Obligatoire")]
+    #[Groups(['commande-simple','zone-read'])]
     private $libelle;
 
     #[ORM\ManyToOne(targetEntity: Zone::class, inversedBy: 'quartiers' , cascade:["Persist"])]

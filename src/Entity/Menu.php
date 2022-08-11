@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ApiResource(
     normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple']],
+    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple',"image-read"]],
 )]
 
 #[Assert\Callback([CallbackMenuService::class, 'validate'])]
