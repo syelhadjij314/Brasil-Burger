@@ -50,7 +50,7 @@ class Zone
     private $commandes;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Quartier::class)]
-    #[Groups(['commande-simple','zone-read'])]
+    #[Groups(['zone-read'])]
     private $quartiers;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'zones')]

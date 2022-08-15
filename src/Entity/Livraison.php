@@ -23,8 +23,8 @@ class Livraison
     #[ORM\OneToMany(mappedBy: 'livraison', targetEntity: Commande::class)]
     private $commandes;
 
-    #[ORM\ManyToOne(targetEntity: Livreur::class, inversedBy: 'livraisons')]
-    private $livreur;
+    #[ORM\ManyToOne(inversedBy: 'livraisons')]
+    private ?Livreur $livreur = null;
 
     public function __construct()
     {

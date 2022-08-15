@@ -18,13 +18,23 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 // #[ORM\table(name:"utilisateur")]
 #[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type", type:"string")]
-#[ORM\DiscriminatorMap(["user" => "User","client" => "Client","gestionnaire" => "Gestionnaire"])]
+#[ORM\DiscriminatorMap(["user" => "User","client" => "Client","gestionnaire" => "Gestionnaire","livreur" => "Livreur"])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
+    /* subresourceOperations:[
+        'api_commandes_user_get_subresource' => [
+            'method' => 'GET',
+            'normalization_context' => [
+                'groups' => ['commandes-user-read'],
+            ],
+            'denormalization_context' => [
+                'groups' => ['commandes-user-read'],
+            ],
+        ],
+    ], */
     collectionOperations:[
         "get"=>[
-        'normalization_context' => ['groups' => ['liste-user-simple']]
-
+        'normalization_context' => ['groups' => ['liste-user-simple','commande-simple']]
         ],
         "post",
         "VALIDATION" => [
@@ -36,7 +46,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ]
     ],
     itemOperations:[
-        "get",
+        "get"=>[
+            'normalization_context' => ['groups' => ['commande-simple']],
+            'denormalization_context' => ['groups' => ['commande-simple']]
+        ],
         "put"
         ]
 )]
@@ -46,11 +59,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
+    #[Groups(['liste-simple','liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson','commande-simple'])]
     protected $id;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message:"Le nom est Obligatoire")]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson','commandes-user-read','livreur-read-simple'])]
+    protected $nom;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson','commandes-user-read','livreur-read-simple'])]
+    protected $prenom;
+
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
+    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson','livreur-read-simple'])]
     protected $login;
 
     #[ORM\Column(type: 'json')]
@@ -73,20 +96,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean',nullable: true)]
     protected $is_enable;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message:"Le nom est Obligatoire")]
-    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
-    protected $nom;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
-    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson'])]
-    protected $prenom;
-
     #[ORM\Column(type: 'datetime')]
     protected $expireAt;
 
-    #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Commande::class)]
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Commande::class)]
+    #[ApiSubresource]
+    #[Groups(['commande-simple'])]
     private $commandes;
 
     #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Zone::class)]

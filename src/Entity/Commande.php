@@ -24,7 +24,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     ],
     itemOperations: [
         "get" => [ "security" => "is_granted('ACCESS_READ', object)" ],
-        "put" => [ "security" => "is_granted('ACCESS_EDIT', object)" ],
+        "put",
         "delete" => [ "security" => "is_granted('ACCESS_DELETE', object)" ],
     ],
 )]
@@ -39,12 +39,15 @@ class Commande
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['commande-simple'])]
     private $numeroCommande;
 
     #[ORM\Column(type: 'datetime')]
+    #[Groups(['commande-simple'])]
     private $dateAt;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['commande-simple'])]
     private $etat="disponible";
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
@@ -52,6 +55,10 @@ class Commande
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
     private $client;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['commande-simple'])]
+    private $montant;
 
     #[ORM\ManyToOne(targetEntity: Zone::class, inversedBy: 'commandes')]
     #[Groups(['commande-simple'])]
@@ -86,13 +93,9 @@ class Commande
     #[Groups(['commande-simple'])]
     private Collection $commandeBoissonTailles;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    // #[Groups(['commande-simple'])]
-    private $montant;
-
     public function __construct()
     {
-        $this->numeroCommande= "NUM".date('ymdhis');
+        $this->numeroCommande= "Com-".date('ymdhis');
         $this->produitCommandes = new ArrayCollection();
         $this->dateAt = new \DateTime();
         // $this->commandeBoissons = new ArrayCollection();

@@ -22,6 +22,7 @@ services:
 
     App\EventSubscriber\UserSubscriber:
         tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
             - { name: doctrine.event_listener, event: prePersist }
 
     # add more service definitions when explicit configuration is needed

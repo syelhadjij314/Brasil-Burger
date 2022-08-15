@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220804010921 extends AbstractMigration
+final class Version20220815192452 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,14 @@ final class Version20220804010921 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE boisson DROP taille, DROP quantite_stock');
+        $this->addSql('ALTER TABLE livreur CHANGE id id INT NOT NULL');
+        $this->addSql('ALTER TABLE livreur ADD CONSTRAINT FK_EB7A4E6DBF396750 FOREIGN KEY (id) REFERENCES user (id) ON DELETE CASCADE');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE boisson ADD taille VARCHAR(255) NOT NULL, ADD quantite_stock INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE livreur DROP CONSTRAINT FK_EB7A4E6DBF396750');
+        $this->addSql('ALTER TABLE livreur CHANGE id id INT AUTO_INCREMENT NOT NULL');
     }
 }

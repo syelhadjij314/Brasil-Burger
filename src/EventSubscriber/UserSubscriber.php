@@ -2,17 +2,20 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\User;
 use App\Entity\Zone;
+use App\Entity\Taille;
 use App\Entity\Produit;
 use App\Entity\Commande;
 use App\Entity\Quartier;
-use App\Entity\Taille;
 use Doctrine\ORM\Events;
+use App\Services\MailerService;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use App\Services\MailerService;
 
 class UserSubscriber implements EventSubscriberInterface
 {
@@ -68,5 +71,16 @@ class UserSubscriber implements EventSubscriberInterface
             // $this->mailerService->send("Confirmation de Commande",$args->getObject()->setClient($this->getClient())->getClient()->getLogin());
             
         }
+    }
+    public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
+    {
+        $data = $event->getData();
+        $user = $event->getUser();
+        if (!$user instanceof UserInterface) {
+            return;
+        }
+        $data['id'] = $user->getId();
+        $event->setData($data);
+        // dd($event);
     }
 }

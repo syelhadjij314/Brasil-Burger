@@ -40,7 +40,7 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read",'catalogue:read',"detail:read"])]
+    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read",'catalogue:read',"detail:read",'commande-simple'])]
     protected $id;
 
     
@@ -59,7 +59,7 @@ class Produit
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
-    // #[Assert\Unique()]
+    #[Assert\Unique()]
     #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','catalogue:read',"detail:read"])]
     protected $nom;
 

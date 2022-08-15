@@ -6,32 +6,45 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LivreurRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LivreurRepository::class)]
-#[ApiResource]
-class Livreur
+#[ApiResource(
+    normalizationContext :['groups' => ['livreur-read-simple']],
+    denormalizationContext:['groups' => ['livreur-read-all']],
+    collectionOperations:[
+        "get",
+        "post"
+    ],
+    itemOperations:[
+        "get",
+        "put"
+    ]
+)]
+class Livreur extends User
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
-
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['livreur-read-simple'])]
     private $matriculeMoto;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['livreur-read-simple'])]
     private $telephone;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $etat;
+    // #[Groups([])]
+    private $etat="disponible";
 
     #[ORM\OneToMany(mappedBy: 'livreur', targetEntity: Livraison::class)]
-    private $livraisons;
+    #[ApiSubresource()]
+    private Collection $livraisons;
 
     public function __construct()
     {
         $this->livraisons = new ArrayCollection();
+        $this->matriculeMoto="MOTO-".date('ymdhis');
     }
 
     public function getId(): ?int
@@ -86,7 +99,7 @@ class Livreur
     public function addLivraison(Livraison $livraison): self
     {
         if (!$this->livraisons->contains($livraison)) {
-            $this->livraisons[] = $livraison;
+            $this->livraisons->add($livraison);
             $livraison->setLivreur($this);
         }
 
