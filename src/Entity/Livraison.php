@@ -43,7 +43,7 @@ class Livraison
     #[Groups(['livraison-read-all','livraison-read-simple'])]
     private ?Livreur $livreur = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     #[Groups(['livraison-read-simple'])]
     private ?string $etat = "en cours";
 
