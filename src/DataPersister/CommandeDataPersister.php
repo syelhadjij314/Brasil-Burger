@@ -25,13 +25,11 @@ class CommandeDataPersister implements ContextAwareDataPersisterInterface{
     }
     public function persist($data, array $context = [])
     {   
-        if ($data instanceof Commande) {
-            
+        if ($data instanceof Commande) {            
             $data->setNumeroCommande($data->getNumeroCommande());               
             $this->prixCommande->montantCommande($data);
             // $this->mailerService->send($data,"Confirmation de Commande",$data->getClient()->getLogin());
-        }
-        
+        }       
         $this->entityManager->persist($data);
         $this->entityManager->flush();
     }

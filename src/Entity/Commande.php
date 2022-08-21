@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\ORM\Mapping as ORM;
 use App\Services\CallbackCommandeService;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -28,40 +30,42 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
         "delete" => [ "security" => "is_granted('ACCESS_DELETE', object)" ],
     ],
 )]
+#[ApiFilter(SearchFilter::class,properties:['id' => 'exact','zone.nom' => 'partial'])]
 
-#[Assert\Callback([CallbackCommandeService::class, 'validate'])]
+// #[Assert\Callback([CallbackCommandeService::class, 'validate'])]
 class Commande
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple','livraison-read-all'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $numeroCommande;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $dateAt;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $etat="disponible";
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
     private $gestionnaire;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $client;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $montant;
 
     #[ORM\ManyToOne(targetEntity: Zone::class, inversedBy: 'commandes')]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $zone;
 
     #[ORM\ManyToOne(targetEntity: Livraison::class, inversedBy: 'commandes')]
@@ -78,13 +82,13 @@ class Commande
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeFrite::class,cascade:["persist"])]
     #[SerializedName('frites')]
     #[Groups(['commande-simple'])]
-    #[Assert\Valid()]
+    // #[Assert\Valid()]
     private $commandeFrites;
 
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeMenu::class,cascade:["persist"])]
     #[SerializedName('menus')]
     #[Groups(['commande-simple'])]
-    #[Assert\Count(min:1,minMessage:"Ajouter au moins 1 burger")]
+    #[Assert\Count(min:1,minMessage:"Ajouter au moins 1 menu")]
     #[Assert\Valid()]
     private $commandeMenus;
 
@@ -354,6 +358,5 @@ class Commande
 
         return $this;
     }
-
     
 }

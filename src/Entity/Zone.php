@@ -4,8 +4,11 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ZoneRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -13,8 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ZoneRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple','zone-read']],
-    denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','commande-simple']],
+    normalizationContext :['groups' => ['commande-simple','zone-read']],
+    denormalizationContext:['groups' => ['commande-simple']],
     // attributes: ["security" => "is_granted('ROLE_GESTIONNAIRE')"],
     collectionOperations: [
         "get",    
@@ -26,6 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         "delete" => [ "security" => "is_granted('ACCESS_DELETE', object)" ],
     ],
 )]
+// #[ApiFilter(SearchFilter::class,properties:['id' => 'exact','zone' => 'partial'])]
+
 class Zone
 {
     #[ORM\Id]
@@ -36,17 +41,17 @@ class Zone
 
     #[ORM\Column(type: 'string', length: 255, unique:true)]
     #[Assert\NotBlank(message: "Le Nom est Obligatoire")]
-    #[Groups(['commande-simple','zone-read'])]
-
+    #[Groups(['commande-simple','zone-read','livraison-read-simple'])]
     private $nom;
 
     #[ORM\Column(type: 'float')]
     #[Assert\NotBlank(message: "Le Prix est Obligatoire")]
     #[Groups(['commande-simple','zone-read'])]
-
     private $prix;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Commande::class)]
+    #[ApiSubresource()]
+    #[Groups(['zone-read'])]
     private $commandes;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Quartier::class)]

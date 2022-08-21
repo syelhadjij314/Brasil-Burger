@@ -59,26 +59,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['liste-simple','liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson','commande-simple'])]
+    #[Groups(['liste-simple','liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson','commande-simple','livreur:read:simple','livraison-read-all'])]
     protected $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message:"Le nom est Obligatoire")]
-    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson','commandes-user-read','livreur-read-simple'])]
-    protected $nom;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
-    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson','commandes-user-read','livreur-read-simple'])]
-    protected $prenom;
-
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson','livreur-read-simple'])]
+    #[Groups(['liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','liste-boisson','livreur-read-simple','livreur-read-all','commande-simple'])]
     protected $login;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read:simple','liste-user-simple','liste-user','liste-user-all'])]
-    protected $roles = [];
+    #[Groups(['user:read:simple','liste-user-simple','liste-user','livreur-read-all','commande-simple'])]
+    protected $roles;
 
     #[ORM\Column(type: 'string')]
     protected $password;
@@ -88,16 +78,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected $produits;
 
     #[SerializedName('password')]
+    #[Groups(['livreur-read-all'])]
     protected $PlainPassword;
 
     #[ORM\Column(type: 'string', length: 255,nullable: true)]
+    #[Groups(['livreur-read-all'])]
     protected $token;
 
     #[ORM\Column(type: 'boolean',nullable: true)]
+    #[Groups(['livreur-read-all'])]
     protected $is_enable;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime',nullable: true)]
+    #[Groups(['livreur-read-all'])]
     protected $expireAt;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message:"Le nom est Obligatoire")]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson','commandes-user-read','livreur-read-simple','livreur-read-all','commande-simple','livraison-read-simple'])]
+    protected $nom;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message:"Le prenom est Obligatoire")]
+    #[Groups(['liste-all','liste-user','liste-user-simple','liste-user-all','liste-boisson','commandes-user-read','livreur-read-simple','livreur-read-all','commande-simple','livraison-read-simple'])]
+    protected $prenom;
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Commande::class)]
     #[ApiSubresource]
@@ -126,6 +130,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->zones = new ArrayCollection();
         $this->quartiers = new ArrayCollection();
         $this->tailles = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -162,7 +167,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // $this->roles=["ROLE_VISITEUR"];
-        return array_unique($roles);
+        return ($roles);
     }
 
     public function setRoles(array $roles): self
@@ -302,6 +307,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->token= rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
         $this->expireAt= new \DateTime("+1 days");
+
     }
 
     /**

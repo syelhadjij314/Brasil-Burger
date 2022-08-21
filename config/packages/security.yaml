@@ -36,6 +36,7 @@ security:
         - { path: ^/api$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/registerLivreur, roles: PUBLIC_ACCESS }
         - { path: ^/api/users, roles:  PUBLIC_ACCESS}
 
 

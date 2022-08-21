@@ -12,11 +12,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LivreurRepository::class)]
 #[ApiResource(
-    normalizationContext :['groups' => ['livreur-read-simple']],
+    normalizationContext :['groups' => ['livreur-read-simple','user:read:simple','liste-user']],
     denormalizationContext:['groups' => ['livreur-read-all']],
     collectionOperations:[
         "get",
-        "post"
+        "post",
     ],
     itemOperations:[
         "get",
@@ -26,15 +26,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Livreur extends User
 {
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['livreur-read-simple'])]
+    #[Groups(['livreur:read:simple','user:read:simple','liste-user','livraison-read-simple'])]
     private $matriculeMoto;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['livreur-read-simple'])]
+    #[Groups(['livreur:read:simple','livreur-read-all','liste-simple','liste-all','user:read:simple','liste-user','liste-user-simple','liste-user-all','livraison-read-simple'])]
     private $telephone;
 
     #[ORM\Column(type: 'string', length: 255)]
-    // #[Groups([])]
+    #[Groups(['livraison-read-simple'])]
     private $etat="disponible";
 
     #[ORM\OneToMany(mappedBy: 'livreur', targetEntity: Livraison::class)]
@@ -43,13 +43,11 @@ class Livreur extends User
 
     public function __construct()
     {
+        parent::__construct();
         $this->livraisons = new ArrayCollection();
         $this->matriculeMoto="MOTO-".date('ymdhis');
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
+        // $this->setRoles([0=>'ROLE_LIVREUR']);
+        // dd(parent::getRoles());
     }
 
     public function getMatriculeMoto(): ?string
