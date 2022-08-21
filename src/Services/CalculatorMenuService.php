@@ -15,8 +15,8 @@ class CalculatorMenuService{
             $prix+=$burger->getBurger()->getPrix()*$burger->getQuantiteBurger();
         }
 
-        foreach ($data->getMenuBoissons() as $boisson) {
-            $prix+=$boisson->getBoisson()->getPrix()*$boisson->getQuantiteBoisson();
+        foreach ($data->getMenuTailles() as $boisson) {
+            $prix+=$boisson->getTaille()->getPrix()*$boisson->getQuantiteTailleBoisson();
         }
 
         foreach ($data->getMenuFrites() as $frite) {

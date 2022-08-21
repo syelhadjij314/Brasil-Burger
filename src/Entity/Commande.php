@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\ORM\Mapping as ORM;
 use App\Services\CallbackCommandeService;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 #[ApiResource(
+    forceEager: false,
     normalizationContext :['groups' => ['liste-simple','liste-all','menu-simple','commande-simple']],
     denormalizationContext:['groups' => ['liste-simple', 'liste-all','menu-simple','commande-simple']],
     collectionOperations: [
@@ -23,53 +26,51 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     ],
     itemOperations: [
         "get" => [ "security" => "is_granted('ACCESS_READ', object)" ],
-        "put" => [ "security" => "is_granted('ACCESS_EDIT', object)" ],
+        "put",
         "delete" => [ "security" => "is_granted('ACCESS_DELETE', object)" ],
     ],
 )]
+#[ApiFilter(SearchFilter::class,properties:['id' => 'exact','zone.nom' => 'partial'])]
 
-#[Assert\Callback([CallbackCommandeService::class, 'validate'])]
+// #[Assert\Callback([CallbackCommandeService::class, 'validate'])]
 class Commande
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple','livraison-read-all'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $numeroCommande;
 
     #[ORM\Column(type: 'datetime')]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $dateAt;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $etat="disponible";
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
     private $gestionnaire;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $client;
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['commande-simple','livraison-read-simple'])]
+    private $montant;
+
     #[ORM\ManyToOne(targetEntity: Zone::class, inversedBy: 'commandes')]
-    #[Groups(['commande-simple'])]
+    #[Groups(['commande-simple','livraison-read-simple'])]
     private $zone;
 
     #[ORM\ManyToOne(targetEntity: Livraison::class, inversedBy: 'commandes')]
     // #[Groups(["menu-simple"])]
     private $livraison;
-
-    #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['commande-simple'])]
-    private $montant;
-
-    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeBoisson::class,cascade:["persist"])]
-    #[SerializedName('boissons')]
-    #[Groups(['commande-simple'])]
-    // #[Assert\NotBlank(message: "Ajouter au moins un boisson")]
-    #[Assert\Valid()]
-    private $commandeBoissons;
 
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeBurger::class,cascade:["persist"])]
     #[SerializedName('burgers')]
@@ -81,25 +82,31 @@ class Commande
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeFrite::class,cascade:["persist"])]
     #[SerializedName('frites')]
     #[Groups(['commande-simple'])]
-    #[Assert\Valid()]
+    // #[Assert\Valid()]
     private $commandeFrites;
 
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeMenu::class,cascade:["persist"])]
     #[SerializedName('menus')]
     #[Groups(['commande-simple'])]
-    #[Assert\Count(min:1,minMessage:"Ajouter au moins 1 burger")]
+    #[Assert\Count(min:1,minMessage:"Ajouter au moins 1 menu")]
     #[Assert\Valid()]
     private $commandeMenus;
 
+    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeBoissonTaille::class,cascade:["persist"])]
+    #[SerializedName('boissons')]
+    #[Groups(['commande-simple'])]
+    private Collection $commandeBoissonTailles;
+
     public function __construct()
     {
-        $this->numeroCommande= "NUM".date('ymdhis');
+        $this->numeroCommande= "Com-".date('ymdhis');
         $this->produitCommandes = new ArrayCollection();
         $this->dateAt = new \DateTime();
-        $this->commandeBoissons = new ArrayCollection();
+        // $this->commandeBoissons = new ArrayCollection();
         $this->commandeBurgers = new ArrayCollection();
         $this->commandeFrites = new ArrayCollection();
         $this->commandeMenus = new ArrayCollection();
+        $this->commandeBoissonTailles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -205,7 +212,7 @@ class Commande
     /**
      * @return Collection<int, CommandeBoisson>
      */
-    public function getCommandeBoissons(): Collection
+    /* public function getCommandeBoissons(): Collection
     {
         return $this->commandeBoissons;
     }
@@ -230,7 +237,7 @@ class Commande
         }
 
         return $this;
-    }
+    } */
 
     /**
      * @return Collection<int, CommandeBurger>
@@ -322,5 +329,34 @@ class Commande
         return $this;
     }
 
+    /**
+     * @return Collection<int, CommandeBoissonTaille>
+     */
+    public function getCommandeBoissonTailles(): Collection
+    {
+        return $this->commandeBoissonTailles;
+    }
+
+    public function addCommandeBoissonTaille(CommandeBoissonTaille $commandeBoissonTaille): self
+    {
+        if (!$this->commandeBoissonTailles->contains($commandeBoissonTaille)) {
+            $this->commandeBoissonTailles->add($commandeBoissonTaille);
+            $commandeBoissonTaille->setCommande($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeBoissonTaille(CommandeBoissonTaille $commandeBoissonTaille): self
+    {
+        if ($this->commandeBoissonTailles->removeElement($commandeBoissonTaille)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeBoissonTaille->getCommande() === $this) {
+                $commandeBoissonTaille->setCommande(null);
+            }
+        }
+
+        return $this;
+    }
     
 }

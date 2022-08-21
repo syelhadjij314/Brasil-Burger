@@ -49,7 +49,8 @@ class DataPersister implements ContextAwareDataPersisterInterface
                 $data->setPassword($password);
                 // dd($data);
                 $data->eraseCredentials();
-                $this->mailerService->send($data,"Creation de Compte",$data->getLogin());
+                // $this->mailerService->send($data,"Creation de Compte",$data->getLogin());
+                // dd($data);
             }
         }
         if ($data instanceof Menu) {
@@ -60,7 +61,7 @@ class DataPersister implements ContextAwareDataPersisterInterface
         }
     
         if ($data instanceof Produit) {           
-            $data->setImage(\file_get_contents($data->getImageString()));
+            $data->setImage(file_get_contents($data->getImageString()));
         }
         // dd($data);
         $this->entityManager->persist($data);

@@ -3,53 +3,54 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\MenuBurgerRepository;
+use App\Repository\MenuTailleRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: MenuBurgerRepository::class)]
+
+#[ORM\Entity(repositoryClass: MenuTailleRepository::class)]
 #[ApiResource(
     normalizationContext:['groups'=> ["menu-simple"]],
     denormalizationContext:['groups'=> ["menu-simple"]]
 )]
-class MenuBurger
+class MenuTaille
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     #[Groups(['menu-simple'])]
-    private $id;
 
-    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
+
+    #[ORM\Column]
     #[Groups(['menu-simple',"detail:read"])]
     #[SerializedName("quantite")]
     #[Assert\NotBlank(message: "La quantite est requise")]
     #[Assert\Positive(message:"La quantite ne doit pas etre nulle")]
-    private $quantiteBurger;
+    private ?int $quantiteTailleBoisson = null;
 
-    #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuBurgers')]
-    private $menu;
-
-    #[ORM\ManyToOne(targetEntity: Burger::class, inversedBy: 'menuBurgers')]
+    #[ORM\ManyToOne(inversedBy: 'menuTailles')]
+    private ?Menu $menu = null;
+    
+    #[ORM\ManyToOne(inversedBy: 'menuTailles',cascade:['persist'])]
     #[Groups(['menu-simple',"detail:read"])]
-    #[Assert\NotBlank(message:"Il faut au moins un burger")]
-    private $burger;
+    private ?Taille $taille = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getQuantiteBurger(): ?int
+    public function getQuantiteTailleBoisson(): ?int
     {
-        return $this->quantiteBurger;
+        return $this->quantiteTailleBoisson;
     }
 
-    public function setQuantiteBurger(int $quantiteBurger): self
+    public function setQuantiteTailleBoisson(int $quantiteTailleBoisson): self
     {
-        $this->quantiteBurger = $quantiteBurger;
+        $this->quantiteTailleBoisson = $quantiteTailleBoisson;
 
         return $this;
     }
@@ -66,14 +67,14 @@ class MenuBurger
         return $this;
     }
 
-    public function getBurger(): ?Burger
+    public function getTaille(): ?Taille
     {
-        return $this->burger;
+        return $this->taille;
     }
 
-    public function setBurger(?Burger $burger): self
+    public function setTaille(?Taille $taille): self
     {
-        $this->burger = $burger;
+        $this->taille = $taille;
 
         return $this;
     }

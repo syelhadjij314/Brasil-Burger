@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\CommandeBoisson;
+use App\Entity\CommandeBoissonTaille;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<CommandeBoisson>
+ * @extends ServiceEntityRepository<CommandeBoissonTaille>
  *
- * @method CommandeBoisson|null find($id, $lockMode = null, $lockVersion = null)
- * @method CommandeBoisson|null findOneBy(array $criteria, array $orderBy = null)
- * @method CommandeBoisson[]    findAll()
- * @method CommandeBoisson[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CommandeBoissonTaille|null find($id, $lockMode = null, $lockVersion = null)
+ * @method CommandeBoissonTaille|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CommandeBoissonTaille[]    findAll()
+ * @method CommandeBoissonTaille[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CommandeBoissonRepository extends ServiceEntityRepository
+class CommandeBoissonTailleRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, CommandeBoisson::class);
+        parent::__construct($registry, CommandeBoissonTaille::class);
     }
 
-    public function add(CommandeBoisson $entity, bool $flush = false): void
+    public function add(CommandeBoissonTaille $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class CommandeBoissonRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(CommandeBoisson $entity, bool $flush = false): void
+    public function remove(CommandeBoissonTaille $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class CommandeBoissonRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return CommandeBoisson[] Returns an array of CommandeBoisson objects
+//     * @return CommandeBoissonTaille[] Returns an array of CommandeBoissonTaille objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class CommandeBoissonRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?CommandeBoisson
+//    public function findOneBySomeField($value): ?CommandeBoissonTaille
 //    {
 //        return $this->createQueryBuilder('c')
 //            ->andWhere('c.exampleField = :val')

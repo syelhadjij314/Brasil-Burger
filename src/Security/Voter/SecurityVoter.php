@@ -2,9 +2,10 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Zone;
 use App\Entity\Commande;
 use App\Entity\Quartier;
-use App\Entity\Zone;
+use App\Entity\Livraison;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -23,7 +24,7 @@ class SecurityVoter extends Voter
     protected function supports($attribute, $subject): bool
     {
         $supportsAttribute = in_array($attribute, ['ACCESS_CREATE','ACCESS_READ', 'ACCESS_EDIT', 'ACCESS_DELETE']);
-        $supportsSubject = $subject instanceof Quartier || $subject instanceof Zone || $subject instanceof Commande;
+        $supportsSubject = $subject instanceof Quartier || $subject instanceof Zone || $subject instanceof Commande || $subject instanceof Livraison;
 
         return $supportsAttribute && $supportsSubject;
     }

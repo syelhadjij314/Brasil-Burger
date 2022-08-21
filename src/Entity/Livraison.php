@@ -7,24 +7,45 @@ use App\Repository\LivraisonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LivraisonRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext:['groups' => ['livraison-read-simple']],
+    denormalizationContext:['groups' => ['livraison-read-all']],
+    collectionOperations: [
+        "get",    
+        "post" => [ "security_post_denormalize" => "is_granted('ACCESS_CREATE', object)" ],
+    ],
+    itemOperations: [
+        "get" => [ "security" => "is_granted('ACCESS_READ', object)" ],
+        "put",
+        "delete" => [ "security" => "is_granted('ACCESS_DELETE', object)" ],
+    ],
+
+)]
 class Livraison
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['livraison-read-simple'])]
     private $id;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: 'float',nullable:true)]
     private $montantTolal;
 
     #[ORM\OneToMany(mappedBy: 'livraison', targetEntity: Commande::class)]
+    #[Groups(['livraison-read-all','livraison-read-simple'])]
     private $commandes;
 
-    #[ORM\ManyToOne(targetEntity: Livreur::class, inversedBy: 'livraisons')]
-    private $livreur;
+    #[ORM\ManyToOne(inversedBy: 'livraisons')]
+    #[Groups(['livraison-read-all','livraison-read-simple'])]
+    private ?Livreur $livreur = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['livraison-read-simple'])]
+    private ?string $etat = "en cours";
 
     public function __construct()
     {
@@ -86,6 +107,18 @@ class Livraison
     public function setLivreur(?Livreur $livreur): self
     {
         $this->livreur = $livreur;
+
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(?string $etat): self
+    {
+        $this->etat = $etat;
 
         return $this;
     }

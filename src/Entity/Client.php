@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 class Client extends User
 {
-
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['liste-all','user:read:simple','liste-user-simple','liste-user','liste-user-all'])]
     private $adresse;

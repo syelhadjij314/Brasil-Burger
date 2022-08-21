@@ -8,7 +8,7 @@ use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use App\Repository\BoissonRepository;
 
-class DataProviderComplement implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
+class ComplementDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
 {
     public function __construct(FriteRepository $friteRepository, BoissonRepository $boissonRepository)
     {

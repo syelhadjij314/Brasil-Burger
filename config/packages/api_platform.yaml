@@ -13,5 +13,6 @@ api_platform:
                 name: Authorization
                 type: header
     collection:
-        pagination:
-            items_per_page: 3
+        
+    eager_loading:
+        force_eager: false

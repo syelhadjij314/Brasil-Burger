@@ -40,12 +40,13 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read"])]
+    #[Groups(["liste-simple",'liste-all',"ecrire",'liste-all_burger','menu-simple','liste-boisson',"image-read",'catalogue:read',"detail:read",'commande-simple'])]
     protected $id;
 
+    
     #[ORM\Column(type: 'integer')]
     // #[Assert\NotBlank(message:"Le Prix est Obligatoire")]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson'])]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','liste-boisson','catalogue:read',"detail:read"])]
     protected $prix;
 
     #[ORM\Column(type: 'boolean')]
@@ -53,21 +54,21 @@ class Produit
     protected $isEtat=true;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'produits')]
-    #[Groups(['liste-all','liste-boisson'])]
+    // #[Groups(['liste-all','liste-boisson'])]
     protected $gestionnaire;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message:"Le Nom est Obligatoire")]
-    // #[Assert\Unique()]
-    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger'])]
+    #[Assert\Unique()]
+    #[Groups(["liste-simple", 'liste-all', "ecrire", 'liste-all_burger','catalogue:read',"detail:read"])]
     protected $nom;
 
     #[ORM\Column(type: 'blob')]
-    #[Groups(['liste-simple-read'])]
+    #[Groups(["liste-simple", 'liste-all','liste-simple-read','catalogue:read','liste-boisson',"detail:read"])]
     protected $image;
 
     #[SerializedName("images")]
-    #[Groups(["liste-simple"])]
+    #[Groups(["image-read",])]
     protected $imageString;
 
     public function getId(): ?int
@@ -125,7 +126,7 @@ class Produit
 
     public function getImage()
     {
-        return is_resource($this->image) ? (base64_encode(stream_get_contents($this->image))) : ($this->image);
+        return is_resource($this->image) ? utf8_encode(base64_encode(stream_get_contents($this->image))) : base64_encode(($this->image));
         
     }
 
